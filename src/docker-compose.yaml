@@ -1,0 +1,59 @@
+name: stackforge
+
+services:
+  stackforge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: stackforge:local
+    container_name: stackforge
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Moscow
+    ports:
+      - "1323:1323"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - stackforge
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:1323/check"]
+      interval: 10m
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+
+  postgres:
+    image: postgres:18-alpine
+    container_name: stackforge-postgres
+    restart: unless-stopped
+    shm_size: 256mb
+    environment:
+      POSTGRES_DB: stackforge
+      POSTGRES_USER: stackforge
+      POSTGRES_PASSWORD: stackforge
+      TZ: Europe/Moscow
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - stackforge
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stackforge -d stackforge"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+
+networks:
+  stackforge:
+    name: stackforge
+
+volumes:
+  postgres_data:
+    name: stackforge_postgres_data
