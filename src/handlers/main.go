@@ -39,6 +39,11 @@ func (h *Handler) InitRouters() *echo.Echo {
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 	e.GET("/check", h.check)
+	h.registerPageRoutes(e)
 
 	return e
+}
+
+func (h *Handler) check(c *echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 }

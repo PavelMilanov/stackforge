@@ -1,0 +1,15 @@
+
+package pages
+
+import "github.com/PavelMilanov/stackforge/views"
+
+templ Dashboard() {
+	@views.Layout("StackForge") {
+		<h1>Dashboard</h1>
+		<p>Портал развертывания Portainer templates.</p>
+		<ul>
+			<li><a href="/templates">Каталог Portainer templates</a></li>
+			<li><a href="/stacks">Созданные stack</a></li>
+		</ul>
+	}
+}

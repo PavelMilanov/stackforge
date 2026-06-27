@@ -1,0 +1,26 @@
+package views
+
+templ Layout(title string) {
+    <!doctype html>
+    <html lang="ru">
+        <head>
+            <meta charset="utf-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1"/>
+            <title>{ title }</title>
+        </head>
+        <body>
+            <header>
+                <strong>StackForge</strong>
+                <nav>
+                    <a href="/">Dashboard</a>
+                    <a href="/templates">Templates</a>
+                    <a href="/stacks">Stacks</a>
+                </nav>
+            </header>
+
+            <main>
+                { children... }
+            </main>
+        </body>
+    </html>
+}
