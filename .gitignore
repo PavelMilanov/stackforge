@@ -1,3 +1,4 @@
 main
 .gocache/
 node_modules
+config.yml

@@ -10,6 +10,7 @@ import (
 
 	"github.com/PavelMilanov/stackforge/config"
 	"github.com/PavelMilanov/stackforge/handlers"
+	"github.com/PavelMilanov/stackforge/integrations/portainer"
 	"github.com/sirupsen/logrus"
 )
 
@@ -22,13 +23,21 @@ func main() {
 	if err != nil {
 		logrus.Fatal(err)
 	}
-	handler := handlers.NewHandler(env)
+	portainerClient, err := portainer.NewClient(
+		env.Portainer.Realm,
+		env.Portainer.Token,
+		env.Portainer.Teams,
+	)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	handler := handlers.NewHandler(env, portainerClient)
 	router := handler.InitRouters()
 	s := http.Server{
 		Addr:              ":1323",
 		Handler:           router,
 		ReadHeaderTimeout: 5 * time.Second,
-		IdleTimeout:       60 * time.Second,
+		IdleTimeout:       30 * time.Second,
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()

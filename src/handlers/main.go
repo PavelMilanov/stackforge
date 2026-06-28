@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/PavelMilanov/stackforge/config"
+	"github.com/PavelMilanov/stackforge/integrations/portainer"
 	svc "github.com/PavelMilanov/stackforge/services"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
@@ -14,21 +14,14 @@ import (
 // Позже сюда будут добавлены сервисы интеграций Portainer, Gitea и storage-слой.
 type Handler struct {
 	Env       *config.Env
-	Templates TemplateService
-}
-
-// TemplateService описывает источник Portainer templates для HTTP-слоя.
-// Сейчас используется static-реализация, позже ее заменит клиент Portainer API.
-type TemplateService interface {
-	List(ctx context.Context) ([]svc.StackTemplate, error)
-	GetByID(ctx context.Context, id string) (svc.StackTemplate, error)
+	Templates *svc.PortainerService
 }
 
 // NewHandler создает HTTP handler с runtime-конфигурацией приложения.
-func NewHandler(env *config.Env) *Handler {
+func NewHandler(env *config.Env, portainerClient *portainer.Client) *Handler {
 	return &Handler{
 		Env:       env,
-		Templates: svc.NewStaticService(),
+		Templates: svc.NewPortainerService(portainerClient),
 	}
 }
 
@@ -39,8 +32,8 @@ func (h *Handler) InitRouters() *echo.Echo {
 	// CORS сейчас открыт для локального этапа разработки интерфейса.
 	// Перед production-запуском список origins должен быть ограничен доменом StackForge.
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{http.MethodGet, http.MethodHead},
+		AllowOrigins: []string{h.Env.Cors.Origin},
+		AllowMethods: []string{http.MethodGet, http.MethodPost},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 

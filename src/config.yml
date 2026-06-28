@@ -1,3 +1,0 @@
-# StackForge runtime config.
-# The current Env struct is still minimal; this file is required because the app reads ./config.yml on startup.
-# Future sections: server, database, portainer, auth, gitea.
