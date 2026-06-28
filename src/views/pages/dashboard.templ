@@ -8,6 +8,7 @@ type ServiceView struct {
 }
 
 type TemplateView struct {
+	ID          string
 	Name        string
 	Category    string
 	Status      string
@@ -47,28 +48,47 @@ type DocCardView struct {
 	Link        string
 }
 
-templ Dashboard() {
-	@TemplateCatalogPage()
+templ Dashboard(templates []TemplateView, selected TemplateView) {
+	@TemplateCatalogPage(templates, selected)
 }
 
-templ TemplateCatalogPage() {
+templ TemplateCatalogPage(templates []TemplateView, selected TemplateView) {
 	@views.Layout("Развертывание стендов из Portainer templates", "templates") {
 		@pageHead("Каталог шаблонов", "Выберите шаблон, полученный из Portainer API. После выбора StackForge показывает описание и состав будущего стенда.")
 
 		<div class="form-row">
 			<label class="field">
 				<span class="field__label">Шаблон из Portainer</span>
-				<span class="select-box">Go API Starter <span>⌄</span></span>
+				<select
+					class="select-box"
+					name="template_id"
+					hx-get="/templates/preview"
+					hx-target="#template-preview"
+					hx-trigger="change"
+					hx-swap="innerHTML"
+				>
+					for _, item := range templates {
+						<option value={ item.ID } selected?={ item.ID == selected.ID }>{ item.Name }</option>
+					}
+				</select>
 			</label>
 			<label class="field">
 				<span class="field__label">Endpoint</span>
-				<span class="select-box">dev-01 <span>⌄</span></span>
+				<select class="select-box" name="endpoint">
+					<option value="dev-01">dev-01</option>
+				</select>
 			</label>
-			<div class="summary-badge">3 сервиса в шаблоне</div>
+			<div class="summary-badge">Данные из Portainer API</div>
 		</div>
 
-		@templateDetails(sampleTemplate())
+		<div id="template-preview">
+			@TemplatePreview(selected)
+		</div>
 	}
+}
+
+templ TemplatePreview(item TemplateView) {
+	@templateDetails(item)
 }
 
 templ StandsPage() {
@@ -245,23 +265,6 @@ templ docCard(item DocCardView) {
 		<p class="card__text">{ item.Description }</p>
 		<a class="wiki-link" href="#">{ item.Link }</a>
 	</article>
-}
-
-func sampleTemplate() TemplateView {
-	return TemplateView{
-		Name:        "Go API Starter",
-		Category:    "Backend",
-		Status:      "Готов к запуску",
-		Description: "Типовой backend-стенд для разработки API-сервиса. Шаблон развернет приложение, PostgreSQL и Redis.",
-		Purpose:     "Быстрый запуск изолированного dev-стенда для backend-разработки.",
-		Fit:         "Подходит для тестирования API, миграций и интеграций.",
-		Parameters:  []string{"имя стенда", "namespace/project", "branch/tag", "endpoint"},
-		Services: []ServiceView{
-			{Name: "go-api", Note: "HTTP service · порт 1323"},
-			{Name: "postgres", Note: "Database · internal"},
-			{Name: "redis", Note: "Cache · internal"},
-		},
-	}
 }
 
 func sampleStands() []StandView {
