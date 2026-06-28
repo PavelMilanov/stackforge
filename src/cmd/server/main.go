@@ -21,7 +21,7 @@ func main() {
 	})
 	env, err := config.NewEnv()
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.WithField("Ошибка загрузки конфигурации", err).Fatal(err)
 	}
 	portainerClient, err := portainer.NewClient(
 		env.Portainer.Realm,
@@ -29,7 +29,7 @@ func main() {
 		env.Portainer.Teams,
 	)
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.WithField("Ошибка загрузки конфигурации", err).Fatal(err)
 	}
 	handler := handlers.NewHandler(env, portainerClient)
 	router := handler.InitRouters()

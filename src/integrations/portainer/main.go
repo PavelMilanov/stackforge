@@ -27,6 +27,17 @@ type Stack struct {
 	TemplateFile string `json:"FileContent"`
 }
 
+/*
+Template представляет custom template из Portainer CustomTemplateList.
+*/
+type Template struct {
+	ID          int    `json:"Id"`
+	Title       string `json:"Title"`
+	Description string `json:"Description"`
+	Category    string `json:"Logo"`
+	Note        string `json:"Note"`
+}
+
 // NewPortainer создает новый экземпляр Portainer.
 func NewClient(realm, token string, teams []int) (*Client, error) {
 	return &Client{

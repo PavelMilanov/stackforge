@@ -17,7 +17,6 @@ func (h *Handler) render(c *echo.Context, component templ.Component) error {
 }
 
 // templateCatalog отображает каталог Portainer templates.
-// В MVP данные пока sample, далее список будет приходить из Portainer API.
 func (h *Handler) templateCatalog(c *echo.Context) error {
 	templates, err := h.Templates.List(c.Request().Context())
 	if err != nil {

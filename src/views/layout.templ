@@ -1,7 +1,7 @@
 package views
 
 templ Layout(title string, active string) {
-	<!doctype html>
+	<!DOCTYPE html>
 	<html lang="ru">
 		<head>
 			<meta charset="utf-8"/>
@@ -17,7 +17,7 @@ templ Layout(title string, active string) {
 				<aside class="sidebar">
 					<div class="brand">
 						<div class="brand__name">StackForge</div>
-						<div class="brand__note">Portainer deployment portal</div>
+						<div class="brand__note">Панель для работы со стендами</div>
 					</div>
 					<nav class="nav">
 						<a class={ "nav__item", templ.KV("nav__item--active", active == "templates") } href="/">Каталог шаблонов</a>

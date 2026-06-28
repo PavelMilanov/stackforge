@@ -28,6 +28,8 @@ func NewHandler(env *config.Env, portainerClient *portainer.Client) *Handler {
 // InitRouters создает Echo router, подключает middleware, статику и маршруты страниц.
 func (h *Handler) InitRouters() *echo.Echo {
 	e := echo.New()
+	//e.Use(middleware.RequestLogger())
+	e.Use(middleware.Recover())
 
 	// CORS сейчас открыт для локального этапа разработки интерфейса.
 	// Перед production-запуском список origins должен быть ограничен доменом StackForge.

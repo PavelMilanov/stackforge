@@ -42,7 +42,7 @@ func Layout(title string, active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"stylesheet\" href=\"/assets/app.css\"><script src=\"/assets/htmx.min.js\" defer></script><script src=\"/assets/alpine.min.js\" defer></script><script src=\"/assets/app.js\" defer></script></head><body x-data><div class=\"shell\"><aside class=\"sidebar\"><div class=\"brand\"><div class=\"brand__name\">StackForge</div><div class=\"brand__note\">Portainer deployment portal</div></div><nav class=\"nav\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"stylesheet\" href=\"/assets/app.css\"><script src=\"/assets/htmx.min.js\" defer></script><script src=\"/assets/alpine.min.js\" defer></script><script src=\"/assets/app.js\" defer></script></head><body x-data><div class=\"shell\"><aside class=\"sidebar\"><div class=\"brand\"><div class=\"brand__name\">StackForge</div><div class=\"brand__note\">Панель для работы со стендами</div></div><nav class=\"nav\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -54,8 +54,7 @@ templ Dashboard(templates []TemplateView, selected TemplateView) {
 
 templ TemplateCatalogPage(templates []TemplateView, selected TemplateView) {
 	@views.Layout("Развертывание стендов из Portainer templates", "templates") {
-		@pageHead("Каталог шаблонов", "Выберите шаблон, полученный из Portainer API. После выбора StackForge показывает описание и состав будущего стенда.")
-
+		@pageHead("Каталог шаблонов", "Выберите шаблон, полученный из Portainer. После выбора появится описание и состав будущего стенда.")
 		<div class="form-row">
 			<label class="field">
 				<span class="field__label">Шаблон из Portainer</span>
@@ -75,12 +74,11 @@ templ TemplateCatalogPage(templates []TemplateView, selected TemplateView) {
 			<label class="field">
 				<span class="field__label">Endpoint</span>
 				<select class="select-box" name="endpoint">
-					<option value="dev-01">dev-01</option>
+					<option value="dev">dev</option>
 				</select>
 			</label>
-			<div class="summary-badge">Данные из Portainer API</div>
+			<div class="summary-badge">Данные из Portainer</div>
 		</div>
-
 		<div id="template-preview">
 			@TemplatePreview(selected)
 		</div>
@@ -158,9 +156,7 @@ templ templateDetails(item TemplateView) {
 				<h2 class="card__title">{ item.Name }</h2>
 				<p class="card__text">{ item.Description }</p>
 			</div>
-
 			<div class="divider"></div>
-
 			<div class="grid grid--2">
 				<div class="card__section">
 					<h3 class="card__title">Назначение</h3>
@@ -176,9 +172,7 @@ templ templateDetails(item TemplateView) {
 					</ul>
 				</div>
 			</div>
-
 			<div class="divider"></div>
-
 			<h3 class="card__title">Сервисы стенда</h3>
 			<div class="grid grid--3" style="margin-top: 18px;">
 				for _, service := range item.Services {
@@ -187,7 +181,6 @@ templ templateDetails(item TemplateView) {
 			</div>
 		</div>
 	</section>
-
 	<section class="info-band">
 		<span>Следующий шаг: заполнить параметры стенда и отправить deployment в Portainer API</span>
 		<a class="button button--primary" style="float: right;" href="/stands">Развернуть</a>

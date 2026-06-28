@@ -28,7 +28,7 @@ func NewPortainerService(client *portainer.Client) *PortainerService {
 }
 
 func (p *PortainerService) List(_ context.Context) ([]StackTemplate, error) {
-	items, err := p.client.GetTemplates()
+	items, err := p.client.TemplatesList()
 	if err != nil {
 		return nil, err
 	}
@@ -37,11 +37,11 @@ func (p *PortainerService) List(_ context.Context) ([]StackTemplate, error) {
 	for _, item := range items {
 		stackTemplates = append(stackTemplates, StackTemplate{
 			ID:          strconv.Itoa(item.ID),
-			Name:        item.StackName,
-			Category:    "",
+			Name:        item.Title,
+			Category:    item.Category,
 			Status:      "",
-			Description: "",
-			Purpose:     "",
+			Description: item.Description,
+			Purpose:     item.Note,
 			Fit:         "",
 			Parameters:  nil,
 			Services:    nil,
@@ -66,5 +66,15 @@ func (p *PortainerService) GetByID(_ context.Context, id string) (StackTemplate,
 	// 			Services:    nil,
 	// 		}, nil
 	// 	}
-	return StackTemplate{}, nil
+	return StackTemplate{
+		ID:          "",
+		Name:        "",
+		Category:    "",
+		Status:      "",
+		Description: "",
+		Purpose:     "",
+		Fit:         "",
+		Parameters:  nil,
+		Services:    nil,
+	}, nil
 }
