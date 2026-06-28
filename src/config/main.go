@@ -6,25 +6,9 @@ import (
 
 /*
 Env описывает конфигурацию приложения.
-
-Поля:
-  - Storage: настройки подключения к S3-compatible storage.
 */
 type Env struct {
 }
-
-/*
-S3Config описывает настройки подключения к S3-compatible storage.
-
-Поля:
-  - Endpoint: адрес S3 endpoint в формате host или host:port.
-  - Region: регион S3 bucket.
-  - Bucket: имя bucket.
-  - Prefix: базовый префикс внутри bucket.
-  - AccessKey: access key для подключения.
-  - SecretKey: secret key для подключения.
-  - Secure: использовать HTTPS-подключение.
-*/
 
 func NewEnv() (*Env, error) {
 	var env Env
