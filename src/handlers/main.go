@@ -38,6 +38,7 @@ func (h *Handler) InitRouters() *echo.Echo {
 		AllowMethods: []string{http.MethodGet, http.MethodHead},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
+	e.Static("/assets", "public/assets")
 	e.GET("/check", h.check)
 	h.registerPageRoutes(e)
 

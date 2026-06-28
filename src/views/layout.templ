@@ -1,26 +1,48 @@
 package views
 
-templ Layout(title string) {
-    <!doctype html>
-    <html lang="ru">
-        <head>
-            <meta charset="utf-8"/>
-            <meta name="viewport" content="width=device-width, initial-scale=1"/>
-            <title>{ title }</title>
-        </head>
-        <body>
-            <header>
-                <strong>StackForge</strong>
-                <nav>
-                    <a href="/">Dashboard</a>
-                    <a href="/templates">Templates</a>
-                    <a href="/stacks">Stacks</a>
-                </nav>
-            </header>
-
-            <main>
-                { children... }
-            </main>
-        </body>
-    </html>
+templ Layout(title string, active string) {
+	<!doctype html>
+	<html lang="ru">
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<title>{ title }</title>
+			<link rel="stylesheet" href="/assets/app.css"/>
+			<script src="/assets/htmx.min.js" defer></script>
+			<script src="/assets/alpine.min.js" defer></script>
+			<script src="/assets/app.js" defer></script>
+		</head>
+		<body x-data>
+			<div class="shell">
+				<aside class="sidebar">
+					<div class="brand">
+						<div class="brand__name">StackForge</div>
+						<div class="brand__note">Portainer deployment portal</div>
+					</div>
+					<nav class="nav">
+						<a class={ "nav__item", templ.KV("nav__item--active", active == "templates") } href="/">Каталог шаблонов</a>
+						<a class={ "nav__item", templ.KV("nav__item--active", active == "stands") } href="/stands">Стенды</a>
+						<a class={ "nav__item", templ.KV("nav__item--active", active == "history") } href="/history">История запусков</a>
+						<a class={ "nav__item", templ.KV("nav__item--active", active == "docs") } href="/docs">Документация</a>
+					</nav>
+					<div class="user-box">
+						<div class="user-box__avatar">SF</div>
+						<div>
+							<div class="user-box__name">Authelia user</div>
+							<div class="user-box__email">dev@example.local</div>
+						</div>
+					</div>
+				</aside>
+				<section class="content">
+					<header class="topbar">
+						<div class="topbar__title">{ title }</div>
+						<div class="endpoint-badge">endpoint: dev-01</div>
+					</header>
+					<main class="page">
+						{ children... }
+					</main>
+				</section>
+			</div>
+		</body>
+	</html>
 }
