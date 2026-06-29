@@ -132,37 +132,38 @@ GetTemplateFile получает содержимое файла custom template
 
 Params
 
-	stack - template-объект (используется ID).
+	template - template-объект (используется ID).
 
 Returns
 
-	*Stack - template-объект с заполненным полем TemplateFile.
+	string - содержимое файла template.
 	error - ошибка запроса или декодирования ответа.
 */
-func (c *Client) GetTemplateFile(stack Stack) (*Stack, error) {
+func (c *Client) GetTemplateFile(template Template) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.Realm+"/api/custom_templates/"+strconv.Itoa(stack.ID)+"/file", nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.Realm+"/api/custom_templates/"+strconv.Itoa(template.ID)+"/file", nil)
 	if err != nil {
-		return &stack, err
+		return "", err
 	}
 	req.Header.Add("X-API-Key", c.Token)
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return &stack, err
+		return "", err
 	}
+	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return &stack, err
+		return "", err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return &stack, fmt.Errorf("%s: %s", resp.Status, string(body))
+		return "", fmt.Errorf("%s: %s", resp.Status, string(body))
 	}
-
-	defer resp.Body.Close()
-	err = json.Unmarshal(body, &stack)
-	if err != nil {
-		return &stack, err
+	var data struct {
+		FileContent string `json:"FileContent"`
 	}
-	return &stack, nil
+	if err := json.Unmarshal(body, &data); err != nil {
+		return "", err
+	}
+	return data.FileContent, nil
 }
