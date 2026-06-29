@@ -10,14 +10,17 @@ import (
 	"github.com/labstack/echo/v5/middleware"
 )
 
-// Handler объединяет конфигурацию приложения и HTTP-обработчики.
-// Позже сюда будут добавлены сервисы интеграций Portainer, Gitea и storage-слой.
+/*
+Handler объединяет конфигурацию приложения и HTTP-обработчики.
+*/
 type Handler struct {
 	Env       *config.Env
 	Templates *svc.PortainerService
 }
 
-// NewHandler создает HTTP handler с runtime-конфигурацией приложения.
+/*
+NewHandler создает HTTP handler с runtime-конфигурацией приложения.
+*/
 func NewHandler(env *config.Env, portainerClient *portainer.Client) *Handler {
 	return &Handler{
 		Env:       env,
@@ -25,14 +28,14 @@ func NewHandler(env *config.Env, portainerClient *portainer.Client) *Handler {
 	}
 }
 
-// InitRouters создает Echo router, подключает middleware, статику и маршруты страниц.
+/*
+InitRouters создает Echo router, подключает middleware, статику и маршруты страниц.
+*/
 func (h *Handler) InitRouters() *echo.Echo {
 	e := echo.New()
 	//e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
 
-	// CORS сейчас открыт для локального этапа разработки интерфейса.
-	// Перед production-запуском список origins должен быть ограничен доменом StackForge.
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{h.Env.Cors.Origin},
 		AllowMethods: []string{http.MethodGet, http.MethodPost},
@@ -49,8 +52,9 @@ func (h *Handler) InitRouters() *echo.Echo {
 	return e
 }
 
-// registerPageRoutes описывает server-side rendered страницы приложения.
-// Маршруты держатся отдельно от InitRouters, чтобы HTTP setup и web-страницы не смешивались.
+/*
+registerPageRoutes описывает server-side rendered страницы приложения.
+*/
 func (h *Handler) registerPageRoutes(e *echo.Echo) {
 	e.GET("/", h.templateCatalog)
 	e.GET("/templates/preview", h.templatePreview)
@@ -59,7 +63,9 @@ func (h *Handler) registerPageRoutes(e *echo.Echo) {
 	e.GET("/docs", h.docs)
 }
 
-// check возвращает минимальный healthcheck без обращения к внешним интеграциям.
+/*
+check возвращает минимальный healthcheck без обращения к внешним интеграциям.
+*/
 func (h *Handler) check(c *echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 }

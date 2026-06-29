@@ -11,7 +11,6 @@ type TemplateView struct {
 	ID          string
 	Name        string
 	Category    string
-	Status      string
 	Description string
 	Purpose     string
 	Fit         string
@@ -151,7 +150,6 @@ templ templateDetails(item TemplateView) {
 			<div class="grid" style="gap: 18px;">
 				<div>
 					<span class="tag">{ item.Category }</span>
-					<span class="tag">{ item.Status }</span>
 				</div>
 				<h2 class="card__title">{ item.Name }</h2>
 				<p class="card__text">{ item.Description }</p>
