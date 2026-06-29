@@ -11,7 +11,6 @@ type StackTemplate struct {
 	ID          string
 	Name        string
 	Category    string
-	Status      string
 	Description string
 	Purpose     string
 	Fit         string
@@ -27,7 +26,7 @@ func NewPortainerService(client *portainer.Client) *PortainerService {
 	return &PortainerService{client: client}
 }
 
-func (p *PortainerService) List(_ context.Context) ([]StackTemplate, error) {
+func (p *PortainerService) TemplatesList(_ context.Context) ([]StackTemplate, error) {
 	items, err := p.client.TemplatesList()
 	if err != nil {
 		return nil, err
@@ -39,7 +38,6 @@ func (p *PortainerService) List(_ context.Context) ([]StackTemplate, error) {
 			ID:          strconv.Itoa(item.ID),
 			Name:        item.Title,
 			Category:    item.Category,
-			Status:      "",
 			Description: item.Description,
 			Purpose:     item.Note,
 			Fit:         "",
@@ -51,30 +49,24 @@ func (p *PortainerService) List(_ context.Context) ([]StackTemplate, error) {
 	return stackTemplates, nil
 }
 
-func (p *PortainerService) GetByID(_ context.Context, id string) (StackTemplate, error) {
-	// for _, item := range p.client.GetStacks() {
-	// 	if item.ID == id {
-	// 		return StackTemplate{
-	// 			ID:          item.ID,
-	// 			Name:        item.StackName,
-	// 			Category:    "",
-	// 			Status:      "",
-	// 			Description: "",
-	// 			Purpose:     "",
-	// 			Fit:         "",
-	// 			Parameters:  nil,
-	// 			Services:    nil,
-	// 		}, nil
-	// 	}
-	return StackTemplate{
-		ID:          "",
-		Name:        "",
-		Category:    "",
-		Status:      "",
-		Description: "",
-		Purpose:     "",
-		Fit:         "",
-		Parameters:  nil,
-		Services:    nil,
-	}, nil
+func (p *PortainerService) TemplateGetByID(_ context.Context, id string) (StackTemplate, error) {
+	items, err := p.client.TemplatesList()
+	if err != nil {
+		return StackTemplate{}, err
+	}
+	for _, item := range items {
+		if strconv.Itoa(item.ID) == id {
+			return StackTemplate{
+				ID:          strconv.Itoa(item.ID),
+				Name:        item.Title,
+				Category:    item.Category,
+				Description: item.Description,
+				Purpose:     item.Note,
+				Fit:         "",
+				Parameters:  nil,
+				Services:    nil,
+			}, nil
+		}
+	}
+	return StackTemplate{}, nil
 }

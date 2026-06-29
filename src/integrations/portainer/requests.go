@@ -88,7 +88,7 @@ func (c *Client) GetStackFile(stack Stack) (*Stack, error) {
 }
 
 /*
-TemplatesList получает список custom templates из Portainer CustomTemplateList.
+TemplatesList получает список custom templates из Portainer.
 
 Returns
 
@@ -103,7 +103,7 @@ func (c *Client) TemplatesList() ([]Template, error) {
 		return nil, err
 	}
 	query := req.URL.Query()
-	query.Set("type", "2")
+	query.Set("type", "2") // 2 - docker standalone
 	req.URL.RawQuery = query.Encode()
 	req.Header.Add("X-API-Key", c.Token)
 	resp, err := c.httpClient.Do(req)

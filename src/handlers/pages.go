@@ -23,7 +23,7 @@ func (h *Handler) render(c *echo.Context, component templ.Component) error {
 templateCatalog отображает каталог Portainer templates.
 */
 func (h *Handler) templateCatalog(c *echo.Context) error {
-	templates, err := h.Templates.List(c.Request().Context())
+	templates, err := h.Templates.TemplatesList(c.Request().Context())
 	if err != nil {
 		logrus.WithError(err).Error("Ошибка")
 		return err
@@ -40,7 +40,7 @@ templatePreview возвращает HTML-фрагмент карточки вы
 */
 func (h *Handler) templatePreview(c *echo.Context) error {
 	templateID := c.QueryParam("template_id")
-	template, err := h.Templates.GetByID(c.Request().Context(), templateID)
+	template, err := h.Templates.TemplateGetByID(c.Request().Context(), templateID)
 	if err != nil {
 		if errors.Is(err, svc.ErrTemplateNotFound) {
 			return c.String(http.StatusNotFound, "template not found")
