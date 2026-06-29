@@ -33,7 +33,7 @@ InitRouters создает Echo router, подключает middleware, ста�
 */
 func (h *Handler) InitRouters() *echo.Echo {
 	e := echo.New()
-	//e.Use(middleware.RequestLogger())
+	// e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{

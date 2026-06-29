@@ -2,50 +2,53 @@ package services
 
 import (
 	"context"
+	"errors"
 	"strconv"
 
-	"github.com/PavelMilanov/stackforge/integrations/portainer"
+	"github.com/PavelMilanov/stackforge/storage/metadata"
 )
 
-type StackTemplate struct {
-	ID          string
-	Name        string
-	Category    string
-	Description string
-	Purpose     string
-	Fit         string
-	Parameters  []string
-	Services    []ServiceInfo
+var ErrTemplateNotFound = errors.New("template not found")
+
+type MetadataStore interface {
+	GetByTemplateKey(key string) (metadata.TemplateMetadata, error)
 }
 
-type PortainerService struct {
-	client *portainer.Client
-}
+func toServiceInfo(items []metadata.ServiceInfo) []ServiceInfo {
+	services := make([]ServiceInfo, 0, len(items))
 
-func NewPortainerService(client *portainer.Client) *PortainerService {
-	return &PortainerService{client: client}
-}
-
-func (p *PortainerService) TemplatesList(_ context.Context) ([]StackTemplate, error) {
-	items, err := p.client.TemplatesList()
-	if err != nil {
-		return nil, err
-	}
-
-	var stackTemplates []StackTemplate
 	for _, item := range items {
-		stackTemplates = append(stackTemplates, StackTemplate{
-			ID:          strconv.Itoa(item.ID),
-			Name:        item.Title,
-			Category:    item.Category,
-			Description: item.Description,
-			Purpose:     item.Note,
-			Fit:         "",
-			Parameters:  nil,
-			Services:    nil,
+		services = append(services, ServiceInfo{
+			Name: item.Name,
+			Note: item.Note,
 		})
 	}
 
+	return services
+}
+
+func (p *PortainerService) TemplatesList(_ context.Context) ([]StackTemplate, error) {
+	var stackTemplates []StackTemplate
+	items, err := p.client.TemplatesList()
+	if err != nil {
+		return stackTemplates, err
+	}
+
+	for _, item := range items {
+		meta, err := p.metadata.GetByTemplateKey(item.Title)
+		if err != nil {
+			return stackTemplates, err
+		}
+		stackTemplates = append(stackTemplates, StackTemplate{
+			ID:          strconv.Itoa(item.ID),
+			Title:       meta.Title,
+			Category:    meta.Category,
+			Description: meta.Description,
+			Fit:         meta.Fit,
+			Parameters:  meta.Parameters,
+			Services:    toServiceInfo(meta.Services),
+		})
+	}
 	return stackTemplates, nil
 }
 
@@ -56,15 +59,18 @@ func (p *PortainerService) TemplateGetByID(_ context.Context, id string) (StackT
 	}
 	for _, item := range items {
 		if strconv.Itoa(item.ID) == id {
+			meta, err := p.metadata.GetByTemplateKey(item.Title)
+			if err != nil {
+				return StackTemplate{}, err
+			}
 			return StackTemplate{
 				ID:          strconv.Itoa(item.ID),
-				Name:        item.Title,
-				Category:    item.Category,
-				Description: item.Description,
-				Purpose:     item.Note,
-				Fit:         "",
-				Parameters:  nil,
-				Services:    nil,
+				Title:       meta.Title,
+				Category:    meta.Category,
+				Description: meta.Description,
+				Fit:         meta.Fit,
+				Parameters:  meta.Parameters,
+				Services:    toServiceInfo(meta.Services),
 			}, nil
 		}
 	}

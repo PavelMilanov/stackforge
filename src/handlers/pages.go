@@ -93,10 +93,9 @@ func toTemplateView(item svc.StackTemplate) pages.TemplateView {
 
 	return pages.TemplateView{
 		ID:          item.ID,
-		Name:        item.Name,
+		Name:        item.Title,
 		Category:    item.Category,
 		Description: item.Description,
-		Purpose:     item.Purpose,
 		Fit:         item.Fit,
 		Parameters:  item.Parameters,
 		Services:    services,

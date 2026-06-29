@@ -12,7 +12,6 @@ type TemplateView struct {
 	Name        string
 	Category    string
 	Description string
-	Purpose     string
 	Fit         string
 	Parameters  []string
 	Services    []ServiceView
@@ -158,7 +157,6 @@ templ templateDetails(item TemplateView) {
 			<div class="grid grid--2">
 				<div class="card__section">
 					<h3 class="card__title">Назначение</h3>
-					<p class="card__text">{ item.Purpose }</p>
 					<p class="card__text">{ item.Fit }</p>
 				</div>
 				<div class="card__section">
