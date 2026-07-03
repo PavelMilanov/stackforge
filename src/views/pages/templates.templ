@@ -1,0 +1,90 @@
+package pages
+
+import "github.com/PavelMilanov/stackforge/views"
+
+templ Dashboard(templates []TemplateView, selected TemplateView) {
+	@TemplateCatalogPage(templates, selected)
+}
+
+templ TemplateCatalogPage(templates []TemplateView, selected TemplateView) {
+	@views.Layout("Развертывание стендов из Portainer templates", "templates") {
+		@pageHead("Каталог шаблонов", "Выберите шаблон, полученный из Portainer. После выбора появится описание и состав будущего стенда.")
+		<div class="form-row">
+			<label class="field">
+				<span class="field__label">Шаблон из Portainer</span>
+				<select
+					class="select-box"
+					name="template_id"
+					hx-get="/templates/preview"
+					hx-target="#template-preview"
+					hx-trigger="change"
+					hx-swap="innerHTML"
+				>
+					for _, item := range templates {
+						<option value={ item.ID } selected?={ item.ID == selected.ID }>{ item.Name }</option>
+					}
+				</select>
+			</label>
+			<label class="field">
+				<span class="field__label">Endpoint</span>
+				<select class="select-box" name="endpoint">
+					<option value="dev">dev</option>
+				</select>
+			</label>
+		</div>
+		<div id="template-preview">
+			@TemplatePreview(selected)
+		</div>
+	}
+}
+
+templ TemplatePreview(item TemplateView) {
+	@templateDetails(item)
+}
+
+templ templateDetails(item TemplateView) {
+	<section class="card">
+		<div class="card__body">
+			<div class="grid" style="gap: 18px;">
+				<div>
+					<span class="tag">{ item.Category }</span>
+				</div>
+				<h2 class="card__title">{ item.Name }</h2>
+				<p class="card__text">{ item.Description }</p>
+			</div>
+			<div class="divider"></div>
+			<div class="grid grid--2">
+				<div class="card__section">
+					<h3 class="card__title">Назначение</h3>
+					<p class="card__text">{ item.Fit }</p>
+				</div>
+				<div class="card__section">
+					<h3 class="card__title">Параметры перед запуском</h3>
+					<ul class="card__text">
+						for _, parameter := range item.Parameters {
+							<li>{ parameter }</li>
+						}
+					</ul>
+				</div>
+			</div>
+			<div class="divider"></div>
+			<h3 class="card__title">Сервисы стенда</h3>
+			<div class="grid grid--3" style="margin-top: 18px;">
+				for _, service := range item.Services {
+					@serviceCard(service)
+				}
+			</div>
+		</div>
+	</section>
+	<section class="info-band">
+		<span>Следующий шаг: заполнить параметры стенда и отправить deployment в Portainer API</span>
+		<a class="button button--primary" style="float: right;" href="/stands">Развернуть</a>
+	</section>
+}
+
+templ serviceCard(item ServiceView) {
+	<div class="service-card">
+		<div class="service-card__title">{ item.Name }</div>
+		<div class="service-card__note">{ item.Note }</div>
+	</div>
+}

@@ -1,0 +1,52 @@
+package pages
+
+type ServiceView struct {
+	Name string
+	Note string
+}
+
+type TemplateView struct {
+	ID          string
+	Name        string
+	Category    string
+	Description string
+	Fit         string
+	Parameters  []string
+	Services    []ServiceView
+}
+
+type StackView struct {
+	Name     string
+	Repo     string
+	Branch   string
+	Domain   string
+	Services string
+}
+
+type StandView struct {
+	Number string
+	Area   string
+	Status string
+	Stacks []StackView
+}
+
+type HistoryEntryView struct {
+	Date   string
+	Stand  string
+	Stack  string
+	User   string
+	Status string
+}
+
+type DocCardView struct {
+	Title       string
+	Description string
+	Link        string
+}
+
+templ pageHead(title string, subtitle string) {
+	<header class="page-head">
+		<h1 class="page-title">{ title }</h1>
+		<p class="page-subtitle">{ subtitle }</p>
+	</header>
+}

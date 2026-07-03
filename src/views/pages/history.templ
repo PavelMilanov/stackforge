@@ -1,0 +1,43 @@
+package pages
+
+import "github.com/PavelMilanov/stackforge/views"
+
+templ HistoryPage() {
+	@views.Layout("История запусков", "history") {
+		@pageHead("История запусков", "Журнал действий по стендам: кто запустил, какой стек был развернут и чем завершилась операция.")
+		<div class="card">
+			<div class="card__body">
+				<h2 class="card__title">Последние операции</h2>
+				<div class="divider"></div>
+				<div class="history-row history-head">
+					<div>Дата</div>
+					<div>Стенд</div>
+					<div>Стек</div>
+					<div>Пользователь</div>
+					<div>Статус</div>
+				</div>
+				for _, entry := range sampleHistory() {
+					@historyRow(entry)
+				}
+			</div>
+		</div>
+	}
+}
+
+templ historyRow(item HistoryEntryView) {
+	<div class="history-row card__section" style="margin-top: 12px;">
+		<div>{ item.Date }</div>
+		<div>{ item.Stand }</div>
+		<div>{ item.Stack }</div>
+		<div>{ item.User }</div>
+		<div><span class="tag">{ item.Status }</span></div>
+	</div>
+}
+
+func sampleHistory() []HistoryEntryView {
+	return []HistoryEntryView{
+		{Date: "28.06.2026 12:10", Stand: "Стенд 01", Stack: "Go API Starter", User: "dev@example.local", Status: "Успешно"},
+		{Date: "28.06.2026 11:42", Stand: "Стенд 02", Stack: "Web App Stack", User: "dev@example.local", Status: "Успешно"},
+		{Date: "27.06.2026 18:05", Stand: "Стенд 03", Stack: "Worker Pipeline", User: "devops@example.local", Status: "Успешно"},
+	}
+}

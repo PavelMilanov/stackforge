@@ -57,6 +57,41 @@ func (h *Handler) stands(c *echo.Context) error {
 	return h.render(c, pages.StandsPage())
 }
 
+// createStandModal возвращает HTML-фрагмент формы создания стека в выбранном стенде.
+func (h *Handler) createStandModal(c *echo.Context) error {
+	templates, err := h.Templates.TemplatesList(c.Request().Context())
+	if err != nil {
+		logrus.WithError(err).Error("Ошибка")
+		return err
+	}
+
+	return h.render(c, pages.CreateStandModal(c.QueryParam("stand"), toTemplateViews(templates)))
+}
+
+// createStand создает стек в стенде. Сейчас это заглушка: реальную интеграционную логику нужно добавить здесь.
+func (h *Handler) createStand(c *echo.Context) error {
+	standNumber := c.FormValue("stand")
+	templateID := c.FormValue("template_id")
+
+	template, err := h.Templates.TemplateGetByID(c.Request().Context(), templateID)
+	if err != nil {
+		if errors.Is(err, svc.ErrTemplateNotFound) {
+			return c.String(http.StatusNotFound, "template not found")
+		}
+		logrus.WithError(err).Error("Ошибка")
+		return err
+	}
+
+	// TODO: здесь будет создание стека в Portainer/Gitea.
+	stand := pages.StandWithCreatedStack(standNumber, toTemplateView(template))
+	return h.render(c, pages.CreateStandResult(stand))
+}
+
+// closeModal очищает контейнер HTMX-модалки.
+func (h *Handler) closeStandModal(c *echo.Context) error {
+	return c.String(http.StatusOK, "")
+}
+
 // history отображает журнал запусков и операций со стендами.
 func (h *Handler) history(c *echo.Context) error {
 	return h.render(c, pages.HistoryPage())

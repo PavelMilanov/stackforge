@@ -42,7 +42,7 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	go func() {
-		logrus.Info("Сервер запущен")
+		logrus.WithField("addr", s.Addr).Info("Сервер запущен")
 		if err := s.ListenAndServe(); err != http.ErrServerClosed {
 			logrus.Fatalf("listen: %s\n", err)
 		}

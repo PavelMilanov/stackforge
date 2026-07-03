@@ -1,0 +1,38 @@
+package pages
+
+import "github.com/PavelMilanov/stackforge/views"
+
+templ DocsPage() {
+	@views.Layout("Документация", "docs") {
+		@pageHead("Документация", "Короткие блоки со ссылками на внутреннюю wiki.")
+		<div class="grid grid--3">
+			for _, item := range sampleDocs() {
+				@docCard(item)
+			}
+		</div>
+		<section class="info-band">
+			<h2>Быстрый ориентир</h2>
+			<p>StackForge показывает шаблоны Portainer, стенды, домены и связи с Gitea.</p>
+			<p>Полные регламенты и инструкции остаются во внутренней wiki.</p>
+		</section>
+	}
+}
+
+templ docCard(item DocCardView) {
+	<article class="card wiki-card">
+		<h2 class="card__title">{ item.Title }</h2>
+		<p class="card__text">{ item.Description }</p>
+		<a class="wiki-link" href="#">{ item.Link }</a>
+	</article>
+}
+
+func sampleDocs() []DocCardView {
+	return []DocCardView{
+		{Title: "Как выбрать шаблон", Description: "Кратко о Portainer templates.", Link: "wiki/stackforge/templates"},
+		{Title: "Работа со стендами", Description: "Правила 4 стендов и стеков.", Link: "wiki/stackforge/stands"},
+		{Title: "Gitea branch", Description: "Связь стека с репозиторием.", Link: "wiki/stackforge/gitea"},
+		{Title: "Домены Traefik", Description: "Публикация доменов стеков.", Link: "wiki/stackforge/domains"},
+		{Title: "История запусков", Description: "Что хранится в журнале.", Link: "wiki/stackforge/history"},
+		{Title: "Ошибки Portainer", Description: "Что передать DevOps.", Link: "wiki/stackforge/errors"},
+	}
+}

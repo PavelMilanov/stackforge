@@ -35,7 +35,6 @@ func (h *Handler) InitRouters() *echo.Echo {
 	e := echo.New()
 	// e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
-
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{h.Env.Cors.Origin},
 		AllowMethods: []string{http.MethodGet, http.MethodPost},
@@ -59,6 +58,10 @@ func (h *Handler) registerPageRoutes(e *echo.Echo) {
 	e.GET("/", h.templateCatalog)
 	e.GET("/templates/preview", h.templatePreview)
 	e.GET("/stands", h.stands)
+	stands := e.Group("/stands")
+	stands.GET("/create-modal", h.createStandModal)
+	stands.POST("/create", h.createStand)
+	stands.GET("/close-modal", h.closeStandModal)
 	e.GET("/history", h.history)
 	e.GET("/docs", h.docs)
 }
