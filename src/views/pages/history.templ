@@ -5,33 +5,40 @@ import "github.com/PavelMilanov/stackforge/views"
 templ HistoryPage() {
 	@views.Layout("История запусков", "history") {
 		@pageHead("История запусков", "Журнал действий по стендам: кто запустил, какой стек был развернут и чем завершилась операция.")
-		<div class="card">
-			<div class="card__body">
-				<h2 class="card__title">Последние операции</h2>
-				<div class="divider"></div>
-				<div class="history-row history-head">
-					<div>Дата</div>
-					<div>Стенд</div>
-					<div>Стек</div>
-					<div>Пользователь</div>
-					<div>Статус</div>
+		<div class="card shadow-sm">
+			<div class="card-body p-4">
+				<h2 class="h4 mb-4">Последние операции</h2>
+				<div class="table-responsive">
+					<table class="table table-hover align-middle history-table mb-0">
+						<thead>
+							<tr>
+								<th>Дата</th>
+								<th>Стенд</th>
+								<th>Стек</th>
+								<th>Пользователь</th>
+								<th>Статус</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, entry := range sampleHistory() {
+								@historyRow(entry)
+							}
+						</tbody>
+					</table>
 				</div>
-				for _, entry := range sampleHistory() {
-					@historyRow(entry)
-				}
 			</div>
 		</div>
 	}
 }
 
 templ historyRow(item HistoryEntryView) {
-	<div class="history-row card__section" style="margin-top: 12px;">
-		<div>{ item.Date }</div>
-		<div>{ item.Stand }</div>
-		<div>{ item.Stack }</div>
-		<div>{ item.User }</div>
-		<div><span class="tag">{ item.Status }</span></div>
-	</div>
+	<tr>
+		<td>{ item.Date }</td>
+		<td>{ item.Stand }</td>
+		<td>{ item.Stack }</td>
+		<td>{ item.User }</td>
+		<td><span class="badge rounded-pill text-bg-success sf-badge">{ item.Status }</span></td>
+	</tr>
 }
 
 func sampleHistory() []HistoryEntryView {

@@ -37,7 +37,7 @@ func main() {
 		Addr:              ":1323",
 		Handler:           router,
 		ReadHeaderTimeout: 5 * time.Second,
-		IdleTimeout:       30 * time.Second,
+		IdleTimeout:       10 * time.Second,
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()

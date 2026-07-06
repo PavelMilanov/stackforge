@@ -7,31 +7,65 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-	"time"
 )
+
+/*
+newRequest создает HTTP-запрос к Portainer API с request timeout и API key.
+
+Входные параметры:
+- ctx: внешний контекст вызова, от которого наследуется отмена запроса.
+- method: HTTP-метод запроса.
+- path: путь Portainer API без базового realm.
+
+Возвращает:
+- *http.Request: подготовленный HTTP-запрос.
+- context.CancelFunc: функция отмены дочернего timeout context.
+- error: ошибка создания HTTP-запроса или nil при успешной подготовке.
+*/
+func (c *Client) newRequest(ctx context.Context, method, path string) (*http.Request, context.CancelFunc, error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
+	timeout := c.timeout
+	if timeout <= 0 {
+		timeout = defaultRequestTimeout
+	}
+
+	timeoutCtx, cancel := context.WithTimeout(ctx, timeout)
+	req, err := http.NewRequestWithContext(timeoutCtx, method, c.Realm+path, nil)
+	if err != nil {
+		cancel()
+		return nil, nil, err
+	}
+	req.Header.Add("X-API-Key", c.Token)
+
+	return req, cancel, nil
+}
 
 /*
 GetStacks получает список стеков из Portainer API.
 
 Входные параметры:
-- отсутствуют.
+- ctx: внешний контекст вызова, от которого наследуется отмена запроса.
 
 Возвращает:
 - []Stack: список стеков из Portainer.
 - error: ошибка создания запроса, HTTP-запроса, чтения тела, статуса ответа или декодирования JSON.
 */
-func (c *Client) GetStacks() ([]Stack, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.Realm+"/api/stacks", nil)
+func (c *Client) GetStacks(ctx context.Context) ([]Stack, error) {
+	req, cancel, err := c.newRequest(ctx, http.MethodGet, "/api/stacks")
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("X-API-Key", c.Token)
+	defer cancel()
+
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
@@ -39,7 +73,6 @@ func (c *Client) GetStacks() ([]Stack, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %s", resp.Status, string(body))
 	}
-	defer resp.Body.Close()
 
 	var stacks []Stack
 
@@ -54,24 +87,26 @@ func (c *Client) GetStacks() ([]Stack, error) {
 GetStackFile получает файл конфигурации для указанного стека.
 
 Входные параметры:
+- ctx: внешний контекст вызова, от которого наследуется отмена запроса.
 - stack: стек Portainer; для запроса используется поле ID.
 
 Возвращает:
 - *Stack: стек с заполненным полем StackFile.
 - error: ошибка создания запроса, HTTP-запроса, чтения тела, статуса ответа или декодирования JSON.
 */
-func (c *Client) GetStackFile(stack Stack) (*Stack, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.Realm+"/api/stacks/"+strconv.Itoa(stack.ID)+"/file", nil)
+func (c *Client) GetStackFile(ctx context.Context, stack Stack) (*Stack, error) {
+	req, cancel, err := c.newRequest(ctx, http.MethodGet, "/api/stacks/"+strconv.Itoa(stack.ID)+"/file")
 	if err != nil {
 		return &stack, err
 	}
-	req.Header.Add("X-API-Key", c.Token)
+	defer cancel()
+
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return &stack, err
 	}
+	defer resp.Body.Close()
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return &stack, err
@@ -79,7 +114,6 @@ func (c *Client) GetStackFile(stack Stack) (*Stack, error) {
 	if resp.StatusCode != http.StatusOK {
 		return &stack, fmt.Errorf("%s: %s", resp.Status, string(body))
 	}
-	defer resp.Body.Close()
 	err = json.Unmarshal(body, &stack)
 	if err != nil {
 		return &stack, err
@@ -91,23 +125,23 @@ func (c *Client) GetStackFile(stack Stack) (*Stack, error) {
 TemplatesList получает список custom templates из Portainer.
 
 Входные параметры:
-- отсутствуют.
+- ctx: внешний контекст вызова, от которого наследуется отмена запроса.
 
 Возвращает:
 - []Template: список custom templates из Portainer.
 - error: ошибка создания запроса, HTTP-запроса, чтения тела, статуса ответа или декодирования JSON.
 */
-func (c *Client) TemplatesList() ([]Template, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.Realm+"/api/custom_templates", nil)
+func (c *Client) TemplatesList(ctx context.Context) ([]Template, error) {
+	req, cancel, err := c.newRequest(ctx, http.MethodGet, "/api/custom_templates")
 	if err != nil {
 		return nil, err
 	}
+	defer cancel()
+
 	query := req.URL.Query()
 	query.Set("type", "2") // 2 - docker standalone
 	req.URL.RawQuery = query.Encode()
-	req.Header.Add("X-API-Key", c.Token)
+
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -133,20 +167,20 @@ func (c *Client) TemplatesList() ([]Template, error) {
 GetTemplateFile получает содержимое файла custom template.
 
 Входные параметры:
+- ctx: внешний контекст вызова, от которого наследуется отмена запроса.
 - template: custom template Portainer; для запроса используется поле ID.
 
 Возвращает:
 - string: содержимое файла custom template.
 - error: ошибка создания запроса, HTTP-запроса, чтения тела, статуса ответа или декодирования JSON.
 */
-func (c *Client) GetTemplateFile(template Template) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.Realm+"/api/custom_templates/"+strconv.Itoa(template.ID)+"/file", nil)
+func (c *Client) GetTemplateFile(ctx context.Context, template Template) (string, error) {
+	req, cancel, err := c.newRequest(ctx, http.MethodGet, "/api/custom_templates/"+strconv.Itoa(template.ID)+"/file")
 	if err != nil {
 		return "", err
 	}
-	req.Header.Add("X-API-Key", c.Token)
+	defer cancel()
+
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return "", err

@@ -10,7 +10,7 @@ templ StandsPage() {
 	@views.Layout("Стенды разработки", "stands") {
 		@pageHead("Стенды", "Стеки внутри стенда показаны плитками: репозиторий, ветка, домен и сервисы.")
 		<div>
-			<div class="grid">
+			<div class="vstack gap-4">
 				for _, stand := range sampleStands() {
 					@StandCard(stand)
 				}
@@ -21,15 +21,15 @@ templ StandsPage() {
 }
 
 templ StandCard(item StandView) {
-	<section id={ "stand-" + item.Number } class="card stand-card">
-		<header class="stand-card__head">
+	<section id={ "stand-" + item.Number } class="card shadow-sm stand-card">
+		<header class="card-header bg-white stand-card__head">
 			<h2 class="stand-card__title">Стенд { item.Number }</h2>
 			<div id={ "stand-create-" + item.Number } class="stand-card__area">{ item.Create }</div>
-			<span id={ "stand-status-" + item.Number } class="tag">{ item.Status }</span>
+			<span id={ "stand-status-" + item.Number } class="badge rounded-pill text-bg-success sf-badge">{ item.Status }</span>
 			<div class="stand-card__actions">
-				<button class="button button--danger" type="button">Удалить</button>
+				<button class="btn btn-outline-danger" type="button">Удалить</button>
 				<button
-					class="button button--primary"
+					class="btn btn-primary"
 					type="button"
 					hx-trigger="click"
 					hx-get={ "/stands/create-modal?stand=" + item.Number }
@@ -43,12 +43,14 @@ templ StandCard(item StandView) {
 		} else {
 			<div
 				id={ "stand-stacks-" + item.Number }
-				class="card__section"
+				class="card-body"
 				hx-get={ "/stands/stacks?stand=" + item.Number }
 				hx-trigger="load"
 				hx-swap="outerHTML"
 			>
-				<p class="card__text">Загрузка стеков из Portainer...</p>
+				<div class="card sf-soft-panel shadow-none">
+					<div class="card-body text-secondary">Загрузка стеков из Portainer...</div>
+				</div>
 			</div>
 		}
 	</section>
@@ -56,15 +58,23 @@ templ StandCard(item StandView) {
 
 templ StandStacks(stand string, stacks []StackView) {
 	if len(stacks) == 0 {
-		<div id={ "stand-stacks-" + stand } class="card__section">
-			<h3 class="card__title">Стек не развернут</h3>
-			<p class="card__text">В стенде нет развернутых стеков.</p>
+		<div id={ "stand-stacks-" + stand } class="card-body">
+			<div class="card sf-soft-panel shadow-none">
+				<div class="card-body">
+					<h3 class="h5">Стек не развернут</h3>
+					<p class="text-secondary mb-0">В стенде нет развернутых стеков.</p>
+				</div>
+			</div>
 		</div>
 	} else {
-		<div id={ "stand-stacks-" + stand } class="grid grid--3">
+		<div id={ "stand-stacks-" + stand } class="card-body">
+			<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
 			for _, stack := range stacks {
-				@stackTile(stack)
+				<div class="col">
+					@stackTile(stack)
+				</div>
 			}
+			</div>
 		</div>
 	}
 }
@@ -72,30 +82,33 @@ templ StandStacks(stand string, stacks []StackView) {
 templ StandStacksResult(stand string, stacks []StackView, create string) {
 	@StandStacks(stand, stacks)
 	<div id={ "stand-create-" + stand } class="stand-card__area" hx-swap-oob="outerHTML">{ create }</div>
-	<span id={ "stand-status-" + stand } class="tag" hx-swap-oob="outerHTML">{ StackStatus(len(stacks)) }</span>
+	<span id={ "stand-status-" + stand } class="badge rounded-pill text-bg-success sf-badge" hx-swap-oob="outerHTML">{ StackStatus(len(stacks)) }</span>
 }
 
 templ stackTile(item StackView) {
-	<article class="stack-tile">
-		<div class="stack-tile__head">
-			<div class="stack-tile__title">{ item.Name }</div>
-			<button class="button button--danger button--compact" type="button">Удалить</button>
+	<article class="card sf-soft-panel stack-tile h-100 shadow-none">
+		<div class="card-body">
+			<div class="d-flex align-items-center justify-content-between gap-3">
+				<div class="stack-tile__title">{ item.Name }</div>
+				<button class="btn btn-sm btn-outline-danger" type="button">Удалить</button>
+			</div>
+			<div class="vstack gap-2 mt-3">
+				@metaRow("repo", item.Repo)
+				@metaRow("branch", item.Branch)
+				@metaRow("domain", item.Domain)
+			</div>
+			<div class="stack-tile__note">{ item.Services }</div>
 		</div>
-		<div class="stack-tile__meta">
-			@metaRow("repo", item.Repo)
-			@metaRow("branch", item.Branch)
-			@metaRow("domain", item.Domain)
-		</div>
-		<div class="stack-tile__note">{ item.Services }</div>
 	</article>
 }
 
 templ CreateStandModal(stand string, templates []TemplateView) {
 	<div
-		class="modal"
+		class="modal d-block sf-modal"
+		tabindex="-1"
 	>
 		<button
-			class="modal__backdrop"
+			class="modal-backdrop show sf-modal-backdrop"
 			type="button"
 			aria-label="Закрыть"
 			hx-trigger="click"
@@ -104,38 +117,39 @@ templ CreateStandModal(stand string, templates []TemplateView) {
 			hx-swap="innerHTML"
 		></button>
 		<section
-			class="modal__panel"
+			class="modal-dialog modal-dialog-centered"
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="create-stand-title"
 		>
-			<header class="modal__head">
-				<h2 id="create-stand-title" class="modal__title">Создание стенда</h2>
+			<div class="modal-content">
+			<header class="modal-header">
+				<h2 id="create-stand-title" class="modal-title h5 fw-bold">Создание стенда</h2>
 				<button
-					class="icon-button"
+					class="btn-close"
 					type="button"
 					aria-label="Закрыть"
 					hx-trigger="click"
 					hx-get="/stands/close-modal"
 					hx-target="#modal-root"
 					hx-swap="innerHTML"
-				>×</button>
+				></button>
 			</header>
 			<form
 				id="create-stand-form"
-				class="modal__body"
+				class="modal-body vstack gap-3"
 				hx-post="/stands/create"
 				hx-target={ "#stand-" + stand }
 				hx-swap="outerHTML"
 			>
-				<label class="field">
-					<span class="field__label">Стенд</span>
-					<input class="text-input" name="stand" type="text" value={ stand } readonly/>
+				<label>
+					<span class="form-label">Стенд</span>
+					<input class="form-control" name="stand" type="text" value={ stand } readonly/>
 				</label>
-				<label class="field">
-					<span class="field__label">Шаблон</span>
+				<label>
+					<span class="form-label">Шаблон</span>
 					<select
-						class="select-box"
+						class="form-select"
 						name="template_id"
 					>
 						for _, item := range templates {
@@ -144,17 +158,18 @@ templ CreateStandModal(stand string, templates []TemplateView) {
 					</select>
 				</label>
 			</form>
-			<footer class="modal__actions">
+			<footer class="modal-footer">
 				<button
-					class="button button--secondary"
+					class="btn btn-outline-secondary"
 					type="button"
 					hx-trigger="click"
 					hx-get="/stands/close-modal"
 					hx-target="#modal-root"
 					hx-swap="innerHTML"
 				>Отмена</button>
-				<button class="button button--primary" type="submit" form="create-stand-form">Создать</button>
+				<button class="btn btn-primary" type="submit" form="create-stand-form">Создать</button>
 			</footer>
+			</div>
 		</section>
 	</div>
 }

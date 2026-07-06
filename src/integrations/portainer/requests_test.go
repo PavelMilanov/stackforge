@@ -1,6 +1,7 @@
 package portainer
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"strings"
@@ -40,6 +41,7 @@ func newTestClient(rt roundTripFunc) *Client {
 		Realm:      "http://portainer.test",
 		Token:      "test-token",
 		httpClient: &http.Client{Transport: rt},
+		timeout:    defaultRequestTimeout,
 	}
 }
 
@@ -79,7 +81,7 @@ func TestTemplatesList(t *testing.T) {
 			}, nil
 		})
 
-		templates, err := client.TemplatesList()
+		templates, err := client.TemplatesList(context.Background())
 		if err != nil {
 			t.Fatalf("TemplatesList returned error: %v", err)
 		}
@@ -105,7 +107,7 @@ func TestTemplatesList(t *testing.T) {
 			}, nil
 		})
 
-		templates, err := client.TemplatesList()
+		templates, err := client.TemplatesList(context.Background())
 		if err == nil {
 			t.Fatal("TemplatesList error = nil, want error")
 		}
@@ -126,7 +128,7 @@ func TestTemplatesList(t *testing.T) {
 			}, nil
 		})
 
-		templates, err := client.TemplatesList()
+		templates, err := client.TemplatesList(context.Background())
 		if err == nil {
 			t.Fatal("TemplatesList error = nil, want error")
 		}

@@ -47,16 +47,15 @@ func toServiceInfo(items []metadata.ServiceInfo) []ServiceInfo {
 TemplatesList возвращает список Portainer templates, дополненный локальной metadata.
 
 Входные параметры:
-  - context.Context: контекст вызова; сейчас не используется, так как Portainer client
-    работает без внешнего context.
+- ctx: контекст вызова, который передается в Portainer API.
 
 Возвращает:
 - []StackTemplate: список templates в формате прикладного слоя.
 - error: ошибка Portainer API, ошибка metadata storage или nil при успешной сборке списка.
 */
-func (p *PortainerService) TemplatesList(_ context.Context) ([]StackTemplate, error) {
+func (p *PortainerService) TemplatesList(ctx context.Context) ([]StackTemplate, error) {
 	var stackTemplates []StackTemplate
-	items, err := p.client.TemplatesList()
+	items, err := p.client.TemplatesList(ctx)
 	if err != nil {
 		return stackTemplates, err
 	}
@@ -83,16 +82,15 @@ func (p *PortainerService) TemplatesList(_ context.Context) ([]StackTemplate, er
 TemplateGetByID ищет Portainer template по ID и дополняет его локальной metadata.
 
 Входные параметры:
-  - context.Context: контекст вызова; сейчас не используется, так как Portainer client
-    работает без внешнего context.
-  - id: строковый идентификатор Portainer custom template.
+- ctx: контекст вызова, который передается в Portainer API.
+- id: строковый идентификатор Portainer custom template.
 
 Возвращает:
 - StackTemplate: найденный template в формате прикладного слоя.
 - error: ошибка Portainer API, ошибка metadata storage или nil при успешном поиске.
 */
-func (p *PortainerService) TemplateGetByID(_ context.Context, id string) (StackTemplate, error) {
-	items, err := p.client.TemplatesList()
+func (p *PortainerService) TemplateGetByID(ctx context.Context, id string) (StackTemplate, error) {
+	items, err := p.client.TemplatesList(ctx)
 	if err != nil {
 		return StackTemplate{}, err
 	}
@@ -120,15 +118,14 @@ func (p *PortainerService) TemplateGetByID(_ context.Context, id string) (StackT
 StacksList возвращает список стеков Portainer в формате прикладного слоя.
 
 Входные параметры:
-  - context.Context: контекст вызова; сейчас не используется, так как Portainer client
-    работает без внешнего context.
+- ctx: контекст вызова, который передается в Portainer API.
 
 Возвращает:
 - []StackInfo: список стеков с ID, именем и временем создания.
 - error: ошибка Portainer API или nil при успешном получении списка.
 */
-func (p *PortainerService) StacksList(_ context.Context) ([]StackInfo, error) {
-	items, err := p.client.GetStacks()
+func (p *PortainerService) StacksList(ctx context.Context) ([]StackInfo, error) {
+	items, err := p.client.GetStacks(ctx)
 	if err != nil {
 		return nil, err
 	}

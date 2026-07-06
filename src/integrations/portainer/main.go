@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+const defaultRequestTimeout = 5 * time.Second
+
 /*
 Client хранит параметры подключения к Portainer API.
 */
@@ -18,6 +20,7 @@ type Client struct {
 	Realm      string
 	Token      string
 	httpClient *http.Client
+	timeout    time.Duration
 	Teams      []int
 }
 
@@ -54,7 +57,7 @@ NewClient создает HTTP-клиент Portainer API.
 - teams: список team ID, доступный клиенту для будущих операций.
 
 Возвращает:
-- *Client: настроенный клиент Portainer с HTTP timeout.
+- *Client: настроенный клиент Portainer с timeout для каждого запроса.
 - error: ошибка инициализации клиента; сейчас всегда nil.
 */
 func NewClient(realm, token string, teams []int) (*Client, error) {
@@ -62,5 +65,7 @@ func NewClient(realm, token string, teams []int) (*Client, error) {
 		Realm:      realm,
 		Token:      token,
 		Teams:      teams,
-		httpClient: &http.Client{Timeout: 15 * time.Second}}, nil
+		httpClient: &http.Client{},
+		timeout:    defaultRequestTimeout,
+	}, nil
 }

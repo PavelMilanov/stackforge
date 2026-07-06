@@ -1,5 +1,5 @@
-
 .gocache/
 node_modules
 config.yml
 src/storage/metadata/templates/**
+views/pages/*_templ.go

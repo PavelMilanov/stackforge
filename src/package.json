@@ -3,16 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:css": "tailwindcss -i ./assets/css/input.css -o ./public/assets/app.css --minify",
+    "build:css": "node ./scripts/build-css.mjs",
     "build:js": "node ./scripts/copy-vendor-assets.mjs",
     "build:frontend": "npm run build:css && npm run build:js",
-    "dev:css": "tailwindcss -i ./assets/css/input.css -o ./public/assets/app.css --watch"
+    "dev:css": "node ./scripts/build-css.mjs"
   },
   "dependencies": {
     "alpinejs": "^3.14.9",
+    "bootstrap": "^5.3.3",
     "htmx.org": "^2.0.4"
-  },
-  "devDependencies": {
-    "tailwindcss": "^3.4.17"
   }
 }

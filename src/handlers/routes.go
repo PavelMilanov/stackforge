@@ -8,12 +8,6 @@ import (
 
 /*
 registerPageRoutes описывает server-side rendered страницы приложения.
-
-Входные параметры:
-- e: Echo router, в который регистрируются маршруты страниц и HTMX-фрагментов.
-
-Возвращает:
-- ничего.
 */
 func (h *Handler) registerPageRoutes(e *echo.Echo) {
 	e.GET("/", h.templateCatalog)

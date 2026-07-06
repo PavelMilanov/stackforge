@@ -5,9 +5,11 @@ import "github.com/PavelMilanov/stackforge/views"
 templ DocsPage() {
 	@views.Layout("Документация", "docs") {
 		@pageHead("Документация", "Короткие блоки со ссылками на внутреннюю wiki.")
-		<div class="grid grid--3">
+		<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
 			for _, item := range sampleDocs() {
-				@docCard(item)
+				<div class="col">
+					@docCard(item)
+				</div>
 			}
 		</div>
 		<section class="info-band">
@@ -19,10 +21,12 @@ templ DocsPage() {
 }
 
 templ docCard(item DocCardView) {
-	<article class="card wiki-card">
-		<h2 class="card__title">{ item.Title }</h2>
-		<p class="card__text">{ item.Description }</p>
-		<a class="wiki-link" href="#">{ item.Link }</a>
+	<article class="card wiki-card h-100 shadow-sm">
+		<div class="card-body">
+			<h2 class="h5">{ item.Title }</h2>
+			<p class="text-secondary">{ item.Description }</p>
+			<a class="btn btn-sm btn-outline-success" href="#">{ item.Link }</a>
+		</div>
 	</article>
 }
 
