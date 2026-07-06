@@ -12,7 +12,7 @@ templ DocsPage() {
 				</div>
 			}
 		</div>
-		<section class="info-band">
+		<section class="card text-bg-dark mt-4 p-4">
 			<h2>Быстрый ориентир</h2>
 			<p>StackForge показывает шаблоны Portainer, стенды, домены и связи с Gitea.</p>
 			<p>Полные регламенты и инструкции остаются во внутренней wiki.</p>
@@ -21,7 +21,7 @@ templ DocsPage() {
 }
 
 templ docCard(item DocCardView) {
-	<article class="card wiki-card h-100 shadow-sm">
+	<article class="card h-100 shadow-sm">
 		<div class="card-body">
 			<h2 class="h5">{ item.Title }</h2>
 			<p class="text-secondary">{ item.Description }</p>

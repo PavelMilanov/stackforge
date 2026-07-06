@@ -42,11 +42,11 @@ func Layout(title string, active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"stylesheet\" href=\"/assets/bootstrap.min.css\"><link rel=\"stylesheet\" href=\"/assets/app.css\"><script src=\"/assets/htmx.min.js\" defer></script><script src=\"/assets/app.js\" defer></script></head><body><div class=\"shell\"><aside class=\"sidebar\"><div class=\"brand\"><div class=\"brand__name\">StackForge</div><div class=\"brand__note\">Панель для работы со стендами</div></div><nav class=\"nav\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"stylesheet\" href=\"/assets/bootstrap.min.css\"><script src=\"/assets/htmx.min.js\" defer></script><script src=\"/assets/app.js\" defer></script></head><body class=\"bg-light text-dark\"><div class=\"d-flex min-vh-100\"><aside class=\"d-flex flex-column flex-shrink-0 p-3 text-white bg-dark\" style=\"width: 248px;\"><div class=\"mb-4\"><div class=\"fs-4 fw-bold\">StackForge</div><div class=\"small text-white-50 mt-2\">Панель для работы со стендами</div></div><nav class=\"nav nav-pills flex-column gap-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var3 = []any{"nav__item", templ.KV("nav__item--active", active == "templates")}
+		var templ_7745c5c3_Var3 = []any{"nav-link text-white-50", templ.KV("active text-white fw-bold", active == "templates")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -68,7 +68,7 @@ func Layout(title string, active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var5 = []any{"nav__item", templ.KV("nav__item--active", active == "stands")}
+		var templ_7745c5c3_Var5 = []any{"nav-link text-white-50", templ.KV("active text-white fw-bold", active == "stands")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -90,7 +90,7 @@ func Layout(title string, active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var7 = []any{"nav__item", templ.KV("nav__item--active", active == "history")}
+		var templ_7745c5c3_Var7 = []any{"nav-link text-white-50", templ.KV("active text-white fw-bold", active == "history")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var7...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -112,7 +112,7 @@ func Layout(title string, active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var9 = []any{"nav__item", templ.KV("nav__item--active", active == "docs")}
+		var templ_7745c5c3_Var9 = []any{"nav-link text-white-50", templ.KV("active text-white fw-bold", active == "docs")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var9...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -130,20 +130,20 @@ func Layout(title string, active string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" href=\"/docs\">Документация</a></nav><div class=\"user-box\"><div class=\"user-box__avatar\">SF</div><div><div class=\"user-box__name\">Authelia user</div><div class=\"user-box__email\">dev@example.local</div></div></div></aside><section class=\"content\"><header class=\"topbar\"><div class=\"topbar__title\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" href=\"/docs\">Документация</a></nav><div class=\"mt-auto d-flex align-items-center gap-3 rounded bg-secondary bg-opacity-25 p-3\"><div class=\"rounded-circle bg-success d-flex align-items-center justify-content-center fw-bold\" style=\"width: 36px; height: 36px;\">SF</div><div><div class=\"small fw-bold\">Authelia user</div><div class=\"small text-white-50\">dev@example.local</div></div></div></aside><section class=\"flex-grow-1 min-w-0\"><header class=\"d-flex align-items-center justify-content-between bg-white border-bottom px-4\" style=\"height: 72px;\"><div class=\"fs-5 fw-bold\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 38, Col: 40}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 37, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><div class=\"endpoint-badge badge rounded-pill text-bg-success sf-badge\">endpoint: dev</div></header><main class=\"page\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><div class=\"badge rounded-pill text-bg-success\">endpoint: dev</div></header><main class=\"p-4 p-xl-5\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

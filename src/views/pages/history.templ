@@ -9,7 +9,7 @@ templ HistoryPage() {
 			<div class="card-body p-4">
 				<h2 class="h4 mb-4">Последние операции</h2>
 				<div class="table-responsive">
-					<table class="table table-hover align-middle history-table mb-0">
+					<table class="table table-hover align-middle mb-0">
 						<thead>
 							<tr>
 								<th>Дата</th>
@@ -37,7 +37,7 @@ templ historyRow(item HistoryEntryView) {
 		<td>{ item.Stand }</td>
 		<td>{ item.Stack }</td>
 		<td>{ item.User }</td>
-		<td><span class="badge rounded-pill text-bg-success sf-badge">{ item.Status }</span></td>
+		<td><span class="badge rounded-pill text-bg-success">{ item.Status }</span></td>
 	</tr>
 }
 

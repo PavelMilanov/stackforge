@@ -47,7 +47,7 @@ templ templateDetails(item TemplateView) {
 		<div class="card-body p-4">
 			<div class="d-grid gap-3">
 				<div>
-					<span class="badge rounded-pill text-bg-success sf-badge">{ item.Category }</span>
+					<span class="badge rounded-pill text-bg-success">{ item.Category }</span>
 				</div>
 				<h2 class="h4 mb-0">{ item.Name }</h2>
 				<p class="text-secondary mb-0">{ item.Description }</p>
@@ -55,7 +55,7 @@ templ templateDetails(item TemplateView) {
 			<hr class="my-4"/>
 			<div class="row g-4">
 				<div class="col-12 col-lg-6">
-					<div class="card sf-soft-panel h-100 shadow-none">
+					<div class="card bg-light h-100 shadow-none">
 						<div class="card-body">
 							<h3 class="h5">Назначение</h3>
 							<p class="text-secondary mb-0">{ item.Fit }</p>
@@ -63,7 +63,7 @@ templ templateDetails(item TemplateView) {
 					</div>
 				</div>
 				<div class="col-12 col-lg-6">
-					<div class="card sf-soft-panel h-100 shadow-none">
+					<div class="card bg-light h-100 shadow-none">
 						<div class="card-body">
 							<h3 class="h5">Параметры перед запуском</h3>
 							<ul class="text-secondary mb-0">
@@ -86,14 +86,14 @@ templ templateDetails(item TemplateView) {
 			</div>
 		</div>
 	</section>
-	<section class="info-band d-flex flex-column flex-lg-row gap-3 justify-content-between align-items-lg-center">
+	<section class="card text-bg-dark mt-4 p-4 d-flex flex-column flex-lg-row gap-3 justify-content-between align-items-lg-center">
 		<span>Следующий шаг: заполнить параметры стенда и отправить deployment в Portainer API</span>
 		<a class="btn btn-primary" href="/stands">Развернуть</a>
 	</section>
 }
 
 templ serviceCard(item ServiceView) {
-	<div class="card sf-soft-panel h-100 shadow-none">
+	<div class="card bg-light h-100 shadow-none">
 		<div class="card-body">
 			<div class="fw-bold">{ item.Name }</div>
 			<div class="small text-secondary mt-2">{ item.Note }</div>

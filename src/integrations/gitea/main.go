@@ -28,7 +28,7 @@ type Client struct {
 Branch описывает ветку репозитория Gitea.
 */
 type Branch struct {
-	Name string
+	Name string `json:"name"`
 }
 
 /*

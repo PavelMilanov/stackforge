@@ -21,12 +21,12 @@ templ StandsPage() {
 }
 
 templ StandCard(item StandView) {
-	<section id={ "stand-" + item.Number } class="card shadow-sm stand-card">
-		<header class="card-header bg-white stand-card__head">
-			<h2 class="stand-card__title">Стенд { item.Number }</h2>
-			<div id={ "stand-create-" + item.Number } class="stand-card__area">{ item.Create }</div>
-			<span id={ "stand-status-" + item.Number } class="badge rounded-pill text-bg-success sf-badge">{ item.Status }</span>
-			<div class="stand-card__actions">
+	<section id={ "stand-" + item.Number } class="card shadow-sm">
+		<header class="card-header bg-white d-flex align-items-center gap-3 flex-wrap">
+			<h2 class="h5 mb-0">Стенд { item.Number }</h2>
+			<div id={ "stand-create-" + item.Number } class="small text-secondary">{ item.Create }</div>
+			<span id={ "stand-status-" + item.Number } class="badge rounded-pill text-bg-success">{ item.Status }</span>
+			<div class="ms-auto d-flex gap-2">
 				<button class="btn btn-outline-danger" type="button">Удалить</button>
 				<button
 					class="btn btn-primary"
@@ -48,7 +48,7 @@ templ StandCard(item StandView) {
 				hx-trigger="load"
 				hx-swap="outerHTML"
 			>
-				<div class="card sf-soft-panel shadow-none">
+				<div class="card bg-light shadow-none">
 					<div class="card-body text-secondary">Загрузка стеков из Portainer...</div>
 				</div>
 			</div>
@@ -59,7 +59,7 @@ templ StandCard(item StandView) {
 templ StandStacks(stand string, stacks []StackView) {
 	if len(stacks) == 0 {
 		<div id={ "stand-stacks-" + stand } class="card-body">
-			<div class="card sf-soft-panel shadow-none">
+			<div class="card bg-light shadow-none">
 				<div class="card-body">
 					<h3 class="h5">Стек не развернут</h3>
 					<p class="text-secondary mb-0">В стенде нет развернутых стеков.</p>
@@ -81,15 +81,15 @@ templ StandStacks(stand string, stacks []StackView) {
 
 templ StandStacksResult(stand string, stacks []StackView, create string) {
 	@StandStacks(stand, stacks)
-	<div id={ "stand-create-" + stand } class="stand-card__area" hx-swap-oob="outerHTML">{ create }</div>
-	<span id={ "stand-status-" + stand } class="badge rounded-pill text-bg-success sf-badge" hx-swap-oob="outerHTML">{ StackStatus(len(stacks)) }</span>
+	<div id={ "stand-create-" + stand } class="small text-secondary" hx-swap-oob="outerHTML">{ create }</div>
+	<span id={ "stand-status-" + stand } class="badge rounded-pill text-bg-success" hx-swap-oob="outerHTML">{ StackStatus(len(stacks)) }</span>
 }
 
 templ stackTile(item StackView) {
-	<article class="card sf-soft-panel stack-tile h-100 shadow-none">
+	<article class="card bg-light h-100 shadow-none">
 		<div class="card-body">
 			<div class="d-flex align-items-center justify-content-between gap-3">
-				<div class="stack-tile__title">{ item.Name }</div>
+				<div class="fw-bold">{ item.Name }</div>
 				<button class="btn btn-sm btn-outline-danger" type="button">Удалить</button>
 			</div>
 			<div class="vstack gap-2 mt-3">
@@ -97,18 +97,18 @@ templ stackTile(item StackView) {
 				@metaRow("branch", item.Branch)
 				@metaRow("domain", item.Domain)
 			</div>
-			<div class="stack-tile__note">{ item.Services }</div>
+			<div class="small text-secondary mt-2">{ item.Services }</div>
 		</div>
 	</article>
 }
 
 templ CreateStandModal(stand string, templates []TemplateView) {
 	<div
-		class="modal d-block sf-modal"
+		class="modal d-block"
 		tabindex="-1"
 	>
 		<button
-			class="modal-backdrop show sf-modal-backdrop"
+			class="modal-backdrop show position-fixed top-0 start-0 w-100 h-100 border-0"
 			type="button"
 			aria-label="Закрыть"
 			hx-trigger="click"
@@ -180,9 +180,9 @@ templ CreateStandResult(item StandView) {
 }
 
 templ metaRow(label string, value string) {
-	<div class="meta-row">
-		<div class="meta-row__label">{ label }</div>
-		<div class="meta-row__value">{ value }</div>
+	<div class="row g-2 small">
+		<div class="col-3 fw-bold text-secondary">{ label }</div>
+		<div class="col text-secondary text-break">{ value }</div>
 	</div>
 }
 
