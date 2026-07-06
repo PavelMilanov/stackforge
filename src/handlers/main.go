@@ -5,7 +5,9 @@ import (
 
 	"github.com/PavelMilanov/stackforge/config"
 	"github.com/PavelMilanov/stackforge/integrations/portainer"
+	appmw "github.com/PavelMilanov/stackforge/middlewares"
 	svc "github.com/PavelMilanov/stackforge/services"
+	"github.com/a-h/templ"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 )
@@ -20,6 +22,13 @@ type Handler struct {
 
 /*
 NewHandler создает HTTP handler с runtime-конфигурацией приложения.
+
+Входные параметры:
+- env: конфигурация окружения приложения.
+- portainerClient: клиент для работы с Portainer API.
+
+Возвращает:
+- *Handler: handler с подключенным сервисом Portainer templates.
 */
 func NewHandler(env *config.Env, portainerClient *portainer.Client) *Handler {
 	return &Handler{
@@ -30,10 +39,16 @@ func NewHandler(env *config.Env, portainerClient *portainer.Client) *Handler {
 
 /*
 InitRouters создает Echo router, подключает middleware, статику и маршруты страниц.
+
+Входные параметры:
+- отсутствуют.
+
+Возвращает:
+- *echo.Echo: настроенный HTTP router приложения.
 */
 func (h *Handler) InitRouters() *echo.Echo {
 	e := echo.New()
-	// e.Use(middleware.RequestLogger())
+	e.Use(appmw.RequestLogger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{h.Env.Cors.Origin},
@@ -52,23 +67,16 @@ func (h *Handler) InitRouters() *echo.Echo {
 }
 
 /*
-registerPageRoutes описывает server-side rendered страницы приложения.
-*/
-func (h *Handler) registerPageRoutes(e *echo.Echo) {
-	e.GET("/", h.templateCatalog)
-	e.GET("/templates/preview", h.templatePreview)
-	e.GET("/stands", h.stands)
-	stands := e.Group("/stands")
-	stands.GET("/create-modal", h.createStandModal)
-	stands.POST("/create", h.createStand)
-	stands.GET("/close-modal", h.closeStandModal)
-	e.GET("/history", h.history)
-	e.GET("/docs", h.docs)
-}
+render пишет HTTP 200 и рендерит templ-компонент в response writer Echo.
 
-/*
-check возвращает минимальный healthcheck без обращения к внешним интеграциям.
+Входные параметры:
+- c: текущий Echo context HTTP-запроса.
+- component: templ-компонент, который нужно отрисовать в ответ.
+
+Возвращает:
+- error: ошибка рендера компонента или nil при успешной записи ответа.
 */
-func (h *Handler) check(c *echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]any{"status": "ok"})
+func (h *Handler) render(c *echo.Context, component templ.Component) error {
+	c.Response().WriteHeader(http.StatusOK)
+	return component.Render(c.Request().Context(), c.Response())
 }

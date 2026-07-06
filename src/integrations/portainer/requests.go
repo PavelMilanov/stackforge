@@ -13,10 +13,12 @@ import (
 /*
 GetStacks получает список стеков из Portainer API.
 
-Returns
+Входные параметры:
+- отсутствуют.
 
-	[]Stack - список стеков.
-	error - ошибка запроса или декодирования ответа.
+Возвращает:
+- []Stack: список стеков из Portainer.
+- error: ошибка создания запроса, HTTP-запроса, чтения тела, статуса ответа или декодирования JSON.
 */
 func (c *Client) GetStacks() ([]Stack, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -51,14 +53,12 @@ func (c *Client) GetStacks() ([]Stack, error) {
 /*
 GetStackFile получает файл конфигурации для указанного стека.
 
-Params
+Входные параметры:
+- stack: стек Portainer; для запроса используется поле ID.
 
-	stack - метаданные стека (используется ID).
-
-Returns
-
-	*Stack - стек с заполненным полем StackFile.
-	error - ошибка запроса или декодирования ответа.
+Возвращает:
+- *Stack: стек с заполненным полем StackFile.
+- error: ошибка создания запроса, HTTP-запроса, чтения тела, статуса ответа или декодирования JSON.
 */
 func (c *Client) GetStackFile(stack Stack) (*Stack, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -90,10 +90,12 @@ func (c *Client) GetStackFile(stack Stack) (*Stack, error) {
 /*
 TemplatesList получает список custom templates из Portainer.
 
-Returns
+Входные параметры:
+- отсутствуют.
 
-	[]Template - список template-объектов.
-	error - ошибка запроса или декодирования ответа.
+Возвращает:
+- []Template: список custom templates из Portainer.
+- error: ошибка создания запроса, HTTP-запроса, чтения тела, статуса ответа или декодирования JSON.
 */
 func (c *Client) TemplatesList() ([]Template, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -130,14 +132,12 @@ func (c *Client) TemplatesList() ([]Template, error) {
 /*
 GetTemplateFile получает содержимое файла custom template.
 
-Params
+Входные параметры:
+- template: custom template Portainer; для запроса используется поле ID.
 
-	template - template-объект (используется ID).
-
-Returns
-
-	string - содержимое файла template.
-	error - ошибка запроса или декодирования ответа.
+Возвращает:
+- string: содержимое файла custom template.
+- error: ошибка создания запроса, HTTP-запроса, чтения тела, статуса ответа или декодирования JSON.
 */
 func (c *Client) GetTemplateFile(template Template) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)

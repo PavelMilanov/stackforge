@@ -1,3 +1,9 @@
+/*
+Package portainer содержит HTTP-клиент для работы с Portainer API.
+
+Пакет отвечает только за сетевые запросы, авторизацию через X-API-Key,
+декодирование JSON-ответов и возврат низкоуровневых моделей Portainer.
+*/
 package portainer
 
 import (
@@ -6,7 +12,7 @@ import (
 )
 
 /*
-PortainerAPI предоставляет интерфейс для взаимодействия с Portainer.
+Client хранит параметры подключения к Portainer API.
 */
 type Client struct {
 	Realm      string
@@ -16,19 +22,20 @@ type Client struct {
 }
 
 /*
-Stack представляет абстракцию при взаимодействии с json в Portainer API.
+Stack описывает стек Portainer и поля JSON, которые используются приложением.
 */
 type Stack struct {
 	ID           int    `json:"Id"`
 	StackName    string `json:"Name"`
 	TemplateName string `json:"Title"`
 	Endpoint     int    `json:"EndpointId"`
+	CreationDate int64  `json:"CreationDate"`
 	StackFile    string `json:"StackFileContent"`
 	TemplateFile string `json:"FileContent"`
 }
 
 /*
-Template представляет custom template из Portainer CustomTemplateList.
+Template описывает custom template из Portainer API.
 */
 type Template struct {
 	ID          int    `json:"Id"`
@@ -38,7 +45,18 @@ type Template struct {
 	Note        string `json:"Note"`
 }
 
-// NewPortainer создает новый экземпляр Portainer.
+/*
+NewClient создает HTTP-клиент Portainer API.
+
+Входные параметры:
+- realm: базовый URL Portainer без завершающего API path.
+- token: API key для заголовка X-API-Key.
+- teams: список team ID, доступный клиенту для будущих операций.
+
+Возвращает:
+- *Client: настроенный клиент Portainer с HTTP timeout.
+- error: ошибка инициализации клиента; сейчас всегда nil.
+*/
 func NewClient(realm, token string, teams []int) (*Client, error) {
 	return &Client{
 		Realm:      realm,

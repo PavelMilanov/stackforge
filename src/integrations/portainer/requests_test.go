@@ -7,12 +7,34 @@ import (
 	"testing"
 )
 
+/*
+roundTripFunc адаптирует функцию под интерфейс http.RoundTripper для тестов.
+*/
 type roundTripFunc func(*http.Request) (*http.Response, error)
 
+/*
+RoundTrip выполняет тестовый HTTP-запрос через функцию roundTripFunc.
+
+Входные параметры:
+- r: HTTP-запрос, сформированный тестируемым Portainer client.
+
+Возвращает:
+- *http.Response: тестовый HTTP-ответ.
+- error: ошибка, которую должен вернуть тестовый transport.
+*/
 func (f roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) {
 	return f(r)
 }
 
+/*
+newTestClient создает Portainer client с подмененным HTTP transport.
+
+Входные параметры:
+- rt: функция, которая обрабатывает HTTP-запросы в тесте.
+
+Возвращает:
+- *Client: тестовый Portainer client с фиксированными realm и token.
+*/
 func newTestClient(rt roundTripFunc) *Client {
 	return &Client{
 		Realm:      "http://portainer.test",
@@ -21,6 +43,15 @@ func newTestClient(rt roundTripFunc) *Client {
 	}
 }
 
+/*
+TestTemplatesList проверяет получение списка custom templates из Portainer.
+
+Входные параметры:
+- t: объект тестирования Go.
+
+Возвращает:
+- ничего; при ошибке тест завершает выполнение через методы testing.T.
+*/
 func TestTemplatesList(t *testing.T) {
 	t.Run("returns templates", func(t *testing.T) {
 		client := newTestClient(func(r *http.Request) (*http.Response, error) {
