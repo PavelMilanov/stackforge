@@ -1,5 +1,7 @@
 package pages
 
+import svc "github.com/PavelMilanov/stackforge/services"
+
 type ServiceView struct {
 	Name string
 	Note string
@@ -10,24 +12,16 @@ type TemplateView struct {
 	Name        string
 	Category    string
 	Description string
-	Fit         string
-	Parameters  []string
+	Repository  string
+	Metadata    []string
 	Services    []ServiceView
-}
-
-type StackView struct {
-	Name     string
-	Repo     string
-	Branch   string
-	Domain   string
-	Services string
 }
 
 type StandView struct {
 	Number string
 	Create string
 	Status string
-	Stacks []StackView
+	Stacks []svc.StackInfo
 }
 
 type HistoryEntryView struct {

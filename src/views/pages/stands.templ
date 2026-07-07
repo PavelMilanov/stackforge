@@ -3,6 +3,7 @@ package pages
 import (
 	"strconv"
 
+	svc "github.com/PavelMilanov/stackforge/services"
 	"github.com/PavelMilanov/stackforge/views"
 )
 
@@ -56,7 +57,7 @@ templ StandCard(item StandView) {
 	</section>
 }
 
-templ StandStacks(stand string, stacks []StackView) {
+templ StandStacks(stand string, stacks []svc.StackInfo) {
 	if len(stacks) == 0 {
 		<div id={ "stand-stacks-" + stand } class="card-body">
 			<div class="card bg-light shadow-none">
@@ -69,23 +70,23 @@ templ StandStacks(stand string, stacks []StackView) {
 	} else {
 		<div id={ "stand-stacks-" + stand } class="card-body">
 			<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
-			for _, stack := range stacks {
-				<div class="col">
-					@stackTile(stack)
-				</div>
-			}
+				for _, stack := range stacks {
+					<div class="col">
+						@stackTile(stack)
+					</div>
+				}
 			</div>
 		</div>
 	}
 }
 
-templ StandStacksResult(stand string, stacks []StackView, create string) {
+templ StandStacksResult(stand string, stacks []svc.StackInfo, create string) {
 	@StandStacks(stand, stacks)
 	<div id={ "stand-create-" + stand } class="small text-secondary" hx-swap-oob="outerHTML">{ create }</div>
 	<span id={ "stand-status-" + stand } class="badge rounded-pill text-bg-success" hx-swap-oob="outerHTML">{ StackStatus(len(stacks)) }</span>
 }
 
-templ stackTile(item StackView) {
+templ stackTile(item svc.StackInfo) {
 	<article class="card bg-light h-100 shadow-none">
 		<div class="card-body">
 			<div class="d-flex align-items-center justify-content-between gap-3">
@@ -93,29 +94,31 @@ templ stackTile(item StackView) {
 				<button class="btn btn-sm btn-outline-danger" type="button">Удалить</button>
 			</div>
 			<div class="vstack gap-2 mt-3">
-				@metaRow("repo", item.Repo)
+				@metaRow("created", stackCreatedAt(item))
+				@metaRow("repo", item.Repository)
 				@metaRow("branch", item.Branch)
 				@metaRow("domain", item.Domain)
 			</div>
-			<div class="small text-secondary mt-2">{ item.Services }</div>
 		</div>
 	</article>
 }
 
 templ CreateStandModal(stand string, templates []TemplateView) {
+	<button
+		class="position-fixed top-0 start-0 w-100 h-100 border-0 bg-dark opacity-50"
+		style="z-index: 1040;"
+		type="button"
+		aria-label="Закрыть"
+		hx-trigger="click"
+		hx-get="/stands/close-modal"
+		hx-target="#modal-root"
+		hx-swap="innerHTML"
+	></button>
 	<div
 		class="modal d-block"
 		tabindex="-1"
+		style="z-index: 1050;"
 	>
-		<button
-			class="modal-backdrop show position-fixed top-0 start-0 w-100 h-100 border-0"
-			type="button"
-			aria-label="Закрыть"
-			hx-trigger="click"
-			hx-get="/stands/close-modal"
-			hx-target="#modal-root"
-			hx-swap="innerHTML"
-		></button>
 		<section
 			class="modal-dialog modal-dialog-centered"
 			role="dialog"
@@ -123,52 +126,52 @@ templ CreateStandModal(stand string, templates []TemplateView) {
 			aria-labelledby="create-stand-title"
 		>
 			<div class="modal-content">
-			<header class="modal-header">
-				<h2 id="create-stand-title" class="modal-title h5 fw-bold">Создание стенда</h2>
-				<button
-					class="btn-close"
-					type="button"
-					aria-label="Закрыть"
-					hx-trigger="click"
-					hx-get="/stands/close-modal"
-					hx-target="#modal-root"
-					hx-swap="innerHTML"
-				></button>
-			</header>
-			<form
-				id="create-stand-form"
-				class="modal-body vstack gap-3"
-				hx-post="/stands/create"
-				hx-target={ "#stand-" + stand }
-				hx-swap="outerHTML"
-			>
-				<label>
-					<span class="form-label">Стенд</span>
-					<input class="form-control" name="stand" type="text" value={ stand } readonly/>
-				</label>
-				<label>
-					<span class="form-label">Шаблон</span>
-					<select
-						class="form-select"
-						name="template_id"
-					>
-						for _, item := range templates {
-							<option value={ item.ID }>{ item.Name }</option>
-						}
-					</select>
-				</label>
-			</form>
-			<footer class="modal-footer">
-				<button
-					class="btn btn-outline-secondary"
-					type="button"
-					hx-trigger="click"
-					hx-get="/stands/close-modal"
-					hx-target="#modal-root"
-					hx-swap="innerHTML"
-				>Отмена</button>
-				<button class="btn btn-primary" type="submit" form="create-stand-form">Создать</button>
-			</footer>
+				<header class="modal-header">
+					<h2 id="create-stand-title" class="modal-title h5 fw-bold">Создание стенда</h2>
+					<button
+						class="btn-close"
+						type="button"
+						aria-label="Закрыть"
+						hx-trigger="click"
+						hx-get="/stands/close-modal"
+						hx-target="#modal-root"
+						hx-swap="innerHTML"
+					></button>
+				</header>
+				<form
+					id="create-stand-form"
+					class="modal-body vstack gap-3"
+					hx-post="/stands/create"
+					hx-target={ "#stand-" + stand }
+					hx-swap="outerHTML"
+				>
+					<label>
+						<span class="form-label">Стенд</span>
+						<input class="form-control" name="stand" type="text" value={ stand } readonly/>
+					</label>
+					<label>
+						<span class="form-label">Шаблон</span>
+						<select
+							class="form-select"
+							name="template_id"
+						>
+							for _, item := range templates {
+								<option value={ item.ID }>{ item.Name }</option>
+							}
+						</select>
+					</label>
+				</form>
+				<footer class="modal-footer">
+					<button
+						class="btn btn-outline-secondary"
+						type="button"
+						hx-trigger="click"
+						hx-get="/stands/close-modal"
+						hx-target="#modal-root"
+						hx-swap="innerHTML"
+					>Отмена</button>
+					<button class="btn btn-primary" type="submit" form="create-stand-form">Создать</button>
+				</footer>
 			</div>
 		</section>
 	</div>
@@ -195,7 +198,7 @@ func sampleStands() []StandView {
 	}
 }
 
-func StandWithStacks(standNumber string, stacks []StackView, create string) StandView {
+func StandWithStacks(standNumber string, stacks []svc.StackInfo, create string) StandView {
 	for _, stand := range sampleStands() {
 		if stand.Number == standNumber {
 			stand.Create = create
@@ -224,4 +227,11 @@ func StackStatus(count int) string {
 		return strconv.Itoa(count) + " стека"
 	}
 	return strconv.Itoa(count) + " стеков"
+}
+
+func stackCreatedAt(item svc.StackInfo) string {
+	if item.CreatedAt.IsZero() || item.CreatedAt.Unix() == 0 {
+		return "-"
+	}
+	return item.CreatedAt.Format("02.01.2006 15:04")
 }

@@ -19,7 +19,7 @@ templateCatalog отображает каталог Portainer templates.
 - error: ошибка получения templates, ошибка рендера страницы или nil при успешной записи ответа.
 */
 func (h *Handler) templateCatalog(c *echo.Context) error {
-	templates, err := h.Templates.TemplatesList(c.Request().Context())
+	templates, err := h.Svc.TemplatesList(c.Request().Context())
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ templatePreview возвращает HTML-фрагмент карточки вы
 */
 func (h *Handler) templatePreview(c *echo.Context) error {
 	templateID := c.QueryParam("template_id")
-	template, err := h.Templates.TemplateGetByID(c.Request().Context(), templateID)
+	template, err := h.Svc.TemplateGetByID(c.Request().Context(), templateID)
 	if err != nil {
 		if errors.Is(err, svc.ErrTemplateNotFound) {
 			return c.String(http.StatusNotFound, "template not found")
@@ -93,8 +93,8 @@ func toTemplateView(item svc.StackTemplate) pages.TemplateView {
 		Name:        item.Title,
 		Category:    item.Category,
 		Description: item.Description,
-		Fit:         item.Fit,
-		Parameters:  item.Parameters,
+		Repository:  item.Repository,
+		Metadata:    item.Metadata,
 		Services:    services,
 	}
 }

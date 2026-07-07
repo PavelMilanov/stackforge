@@ -12,8 +12,8 @@ type TemplateMetadata struct {
 	Title       string        `mapstructure:"title"`
 	Category    string        `mapstructure:"category"`
 	Description string        `mapstructure:"description"`
-	Fit         string        `mapstructure:"fit"`
-	Parameters  []string      `mapstructure:"parameters"`
+	Repository  string        `mapstructure:"repository"`
+	Metadata    []string      `mapstructure:"metadata"`
 	Services    []ServiceInfo `mapstructure:"services"`
 }
 
@@ -32,7 +32,7 @@ func NewStore() *Store {
 	return &Store{dir: filepath.Join("storage", "metadata", "templates")}
 }
 
-func (s *Store) GetByTemplateKey(key string) (TemplateMetadata, error) {
+func (s *Store) GetTemplate(key string) (TemplateMetadata, error) {
 	path := filepath.Join(s.dir, key+".yaml")
 
 	v := viper.New()

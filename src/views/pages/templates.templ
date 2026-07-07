@@ -57,18 +57,18 @@ templ templateDetails(item TemplateView) {
 				<div class="col-12 col-lg-6">
 					<div class="card bg-light h-100 shadow-none">
 						<div class="card-body">
-							<h3 class="h5">Назначение</h3>
-							<p class="text-secondary mb-0">{ item.Fit }</p>
+							<h3 class="h5">Репозиторий</h3>
+							<p class="text-secondary mb-0">{ item.Repository }</p>
 						</div>
 					</div>
 				</div>
 				<div class="col-12 col-lg-6">
 					<div class="card bg-light h-100 shadow-none">
 						<div class="card-body">
-							<h3 class="h5">Параметры перед запуском</h3>
+							<h3 class="h5">Метаданные</h3>
 							<ul class="text-secondary mb-0">
-								for _, parameter := range item.Parameters {
-									<li>{ parameter }</li>
+								for _, meta := range item.Metadata {
+									<li>{ meta }</li>
 								}
 							</ul>
 						</div>

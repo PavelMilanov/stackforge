@@ -16,8 +16,8 @@ type StackTemplate struct {
 	Title       string
 	Category    string
 	Description string
-	Fit         string
-	Parameters  []string
+	Repository  string
+	Metadata    []string
 	Services    []ServiceInfo
 }
 
@@ -33,9 +33,12 @@ type ServiceInfo struct {
 StackInfo описывает стек Portainer в формате, который нужен странице стендов.
 */
 type StackInfo struct {
-	ID        int
-	Name      string
-	CreatedAt time.Time
+	ID         int
+	Name       string
+	CreatedAt  time.Time
+	Repository string
+	Branch     string
+	Domain     string
 }
 
 /*
@@ -44,6 +47,13 @@ PortainerService объединяет Portainer API и metadata storage.
 type PortainerService struct {
 	client   *portainer.Client
 	metadata MetadataStore
+}
+
+/*
+MetadataStore описывает хранилище metadata для custom templates.
+*/
+type MetadataStore interface {
+	GetTemplate(key string) (metadata.TemplateMetadata, error)
 }
 
 /*

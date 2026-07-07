@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/PavelMilanov/stackforge/storage/metadata"
@@ -13,13 +14,6 @@ import (
 ErrTemplateNotFound используется, когда template не найден в прикладном слое.
 */
 var ErrTemplateNotFound = errors.New("template not found")
-
-/*
-MetadataStore описывает хранилище metadata для custom templates.
-*/
-type MetadataStore interface {
-	GetByTemplateKey(key string) (metadata.TemplateMetadata, error)
-}
 
 /*
 toServiceInfo преобразует metadata.ServiceInfo в services.ServiceInfo.
@@ -61,7 +55,7 @@ func (p *PortainerService) TemplatesList(ctx context.Context) ([]StackTemplate, 
 	}
 
 	for _, item := range items {
-		meta, err := p.metadata.GetByTemplateKey(item.Title)
+		meta, err := p.metadata.GetTemplate(item.Title)
 		if err != nil {
 			return stackTemplates, err
 		}
@@ -70,8 +64,8 @@ func (p *PortainerService) TemplatesList(ctx context.Context) ([]StackTemplate, 
 			Title:       meta.Title,
 			Category:    meta.Category,
 			Description: meta.Description,
-			Fit:         meta.Fit,
-			Parameters:  meta.Parameters,
+			Repository:  meta.Repository,
+			Metadata:    meta.Metadata,
 			Services:    toServiceInfo(meta.Services),
 		})
 	}
@@ -96,7 +90,7 @@ func (p *PortainerService) TemplateGetByID(ctx context.Context, id string) (Stac
 	}
 	for _, item := range items {
 		if strconv.Itoa(item.ID) == id {
-			meta, err := p.metadata.GetByTemplateKey(item.Title)
+			meta, err := p.metadata.GetTemplate(item.Title)
 			if err != nil {
 				return StackTemplate{}, err
 			}
@@ -105,8 +99,8 @@ func (p *PortainerService) TemplateGetByID(ctx context.Context, id string) (Stac
 				Title:       meta.Title,
 				Category:    meta.Category,
 				Description: meta.Description,
-				Fit:         meta.Fit,
-				Parameters:  meta.Parameters,
+				Repository:  meta.Repository,
+				Metadata:    meta.Metadata,
 				Services:    toServiceInfo(meta.Services),
 			}, nil
 		}
@@ -114,30 +108,55 @@ func (p *PortainerService) TemplateGetByID(ctx context.Context, id string) (Stac
 	return StackTemplate{}, nil
 }
 
-/*
-StacksList возвращает список стеков Portainer в формате прикладного слоя.
-
-Входные параметры:
-- ctx: контекст вызова, который передается в Portainer API.
-
-Возвращает:
-- []StackInfo: список стеков с ID, именем и временем создания.
-- error: ошибка Portainer API или nil при успешном получении списка.
-*/
-func (p *PortainerService) StacksList(ctx context.Context) ([]StackInfo, error) {
-	items, err := p.client.GetStacks(ctx)
+func (p *PortainerService) StacksByStand(ctx context.Context, standNumber string) ([]StackInfo, error) {
+	portainerStacks, err := p.client.GetStacks(ctx)
 	if err != nil {
 		return nil, err
 	}
+	stacks := make([]StackInfo, 0, len(portainerStacks))
+	templates := make(map[string]metadata.TemplateMetadata)
 
-	stacks := make([]StackInfo, 0, len(items))
-	for _, item := range items {
+	for _, item := range portainerStacks {
+		stand, stackName := parseStackName(item.StackName)
+		if stand != standNumber {
+			continue
+		}
+
+		meta, ok := templates[stackName]
+		if !ok {
+			meta, err = p.metadata.GetTemplate(stackName)
+			if err != nil {
+				return nil, err
+			}
+			templates[stackName] = meta
+		}
+
 		stacks = append(stacks, StackInfo{
-			ID:        item.ID,
-			Name:      item.StackName,
-			CreatedAt: time.Unix(item.CreationDate, 0),
+			ID:         item.ID,
+			Name:       item.StackName,
+			CreatedAt:  time.Unix(item.CreationDate, 0),
+			Repository: meta.Repository,
+			Branch:     "stand/" + stand,
+			Domain:     "",
 		})
 	}
-
 	return stacks, nil
+}
+
+/*
+parseStackName разделяет имя стека Portainer на номер стенда и имя стека.
+
+Входные параметры:
+- name: имя стека в формате <stand>-<stack>.
+
+Возвращает:
+- string: номер стенда.
+- string: имя стека без номера стенда,.
+*/
+func parseStackName(name string) (string, string) {
+	stand, stackName, ok := strings.Cut(name, "-")
+	if !ok {
+		return "", name
+	}
+	return stand, stackName
 }
