@@ -15,9 +15,10 @@ func (h *Handler) registerPageRoutes(e *echo.Echo) {
 	e.GET("/stands", h.stands)
 
 	stands := e.Group("/stands")
-	stands.GET("/create-modal", h.createStandModal)
 	stands.GET("/stacks", h.standStacks)
 	stands.POST("/create", h.createStand)
+	stands.GET("/stacks/create-modal", h.createStackModal)
+	stands.POST("/stacks/create", h.createStack)
 	stands.GET("/close-modal", h.closeStandModal)
 
 	e.GET("/history", h.history)

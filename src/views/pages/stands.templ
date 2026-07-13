@@ -33,9 +33,9 @@ templ StandCard(item StandView) {
 					class="btn btn-primary"
 					type="button"
 					hx-trigger="click"
-					hx-get={ "/stands/create-modal?stand=" + item.Number }
-					hx-target="#modal-root"
-					hx-swap="innerHTML"
+					hx-post={ "/stands/create?stand=" + item.Number }
+					hx-target={ "#stand-" + item.Number }
+					hx-swap="outerHTML"
 				>Добавить</button>
 			</div>
 		</header>
@@ -58,26 +58,18 @@ templ StandCard(item StandView) {
 }
 
 templ StandStacks(stand string, stacks []svc.StackInfo) {
-	if len(stacks) == 0 {
-		<div id={ "stand-stacks-" + stand } class="card-body">
-			<div class="card bg-light shadow-none">
-				<div class="card-body">
-					<h3 class="h5">Стек не развернут</h3>
-					<p class="text-secondary mb-0">В стенде нет развернутых стеков.</p>
+	<div id={ "stand-stacks-" + stand } class="card-body">
+		<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+			for _, stack := range stacks {
+				<div class="col">
+					@stackTile(stack)
 				</div>
+			}
+			<div class="col">
+				@createStackTile(stand)
 			</div>
 		</div>
-	} else {
-		<div id={ "stand-stacks-" + stand } class="card-body">
-			<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
-				for _, stack := range stacks {
-					<div class="col">
-						@stackTile(stack)
-					</div>
-				}
-			</div>
-		</div>
-	}
+	</div>
 }
 
 templ StandStacksResult(stand string, stacks []svc.StackInfo, create string) {
@@ -95,7 +87,7 @@ templ stackTile(item svc.StackInfo) {
 			</div>
 			<div class="vstack gap-2 mt-3">
 				@metaRow("created", stackCreatedAt(item))
-				@metaRow("repo", item.Repository)
+				@metaLinkRow("repo", item.Repository)
 				@metaRow("branch", item.Branch)
 				@metaRow("domain", item.Domain)
 			</div>
@@ -103,7 +95,20 @@ templ stackTile(item svc.StackInfo) {
 	</article>
 }
 
-templ CreateStandModal(stand string, templates []TemplateView) {
+templ createStackTile(stand string) {
+	<button
+		class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center gap-2 p-4"
+		type="button"
+		hx-get={ "/stands/stacks/create-modal?stand=" + stand }
+		hx-target="#modal-root"
+		hx-swap="innerHTML"
+	>
+		<span class="fs-3 lh-1" aria-hidden="true">+</span>
+		<span class="fw-semibold">Добавить стек</span>
+	</button>
+}
+
+templ CreateStackModal(stand string, templates []TemplateView) {
 	<button
 		class="position-fixed top-0 start-0 w-100 h-100 border-0 bg-dark opacity-50"
 		style="z-index: 1040;"
@@ -123,11 +128,11 @@ templ CreateStandModal(stand string, templates []TemplateView) {
 			class="modal-dialog modal-dialog-centered"
 			role="dialog"
 			aria-modal="true"
-			aria-labelledby="create-stand-title"
+			aria-labelledby="create-stack-title"
 		>
 			<div class="modal-content">
 				<header class="modal-header">
-					<h2 id="create-stand-title" class="modal-title h5 fw-bold">Создание стенда</h2>
+					<h2 id="create-stack-title" class="modal-title h5 fw-bold">Добавление стека</h2>
 					<button
 						class="btn-close"
 						type="button"
@@ -139,9 +144,9 @@ templ CreateStandModal(stand string, templates []TemplateView) {
 					></button>
 				</header>
 				<form
-					id="create-stand-form"
+					id="create-stack-form"
 					class="modal-body vstack gap-3"
-					hx-post="/stands/create"
+					hx-post="/stands/stacks/create"
 					hx-target={ "#stand-" + stand }
 					hx-swap="outerHTML"
 				>
@@ -170,14 +175,14 @@ templ CreateStandModal(stand string, templates []TemplateView) {
 						hx-target="#modal-root"
 						hx-swap="innerHTML"
 					>Отмена</button>
-					<button class="btn btn-primary" type="submit" form="create-stand-form">Создать</button>
+					<button class="btn btn-primary" type="submit" form="create-stack-form">Создать</button>
 				</footer>
 			</div>
 		</section>
 	</div>
 }
 
-templ CreateStandResult(item StandView) {
+templ CreateStackResult(item StandView) {
 	@StandCard(item)
 	<div id="modal-root" hx-swap-oob="innerHTML"></div>
 }
@@ -186,6 +191,15 @@ templ metaRow(label string, value string) {
 	<div class="row g-2 small">
 		<div class="col-3 fw-bold text-secondary">{ label }</div>
 		<div class="col text-secondary text-break">{ value }</div>
+	</div>
+}
+
+templ metaLinkRow(label string, value string) {
+	<div class="row g-2 small">
+		<div class="col-3 fw-bold text-secondary">{ label }</div>
+		<div class="col text-break">
+			<a href={ templ.URL(value) } target="_blank" rel="noopener noreferrer">{ value }</a>
+		</div>
 	</div>
 }
 
